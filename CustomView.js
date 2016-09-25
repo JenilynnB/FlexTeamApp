@@ -5,11 +5,16 @@ import {
   Platform,
   StyleSheet,
   TouchableOpacity,
+  TouchableHighlight,
   View,
   Text,
 } from 'react-native';
 
+import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
+import botMessages from './data/bot-messages.js';
+
 export default class CustomView extends React.Component {
+
   render() {
     if (this.props.currentMessage.location) {
       return (
@@ -50,12 +55,11 @@ export default class CustomView extends React.Component {
       const returnString = 
           messageActions.map(m => {
             return (
-              <TouchableOpacity key={m.text} style={styles.messageActionView}>
+              <TouchableOpacity key={m.text} style={styles.messageActionView} onPress={() => this.props.onBotActionClicked(m.action)} >
                 <Text style={styles.messageAction}>{m.text}</Text>
               </TouchableOpacity>
             )
           });
-      console.log(returnString);
       return (
         <View>
         {returnString}
@@ -66,8 +70,11 @@ export default class CustomView extends React.Component {
     }
 
     return null;
-  }
+  }  
+
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

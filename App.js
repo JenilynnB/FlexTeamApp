@@ -11,8 +11,9 @@ import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';
 import CustomView from './CustomView';
 import BotBubble from './BotBubble.js';
+import botMessages from './data/bot-messages.js';
 
-export default class Example extends React.Component {
+export default class Chat extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,6 +21,9 @@ export default class Example extends React.Component {
       loadEarlier: true,
       typingText: null,
       isLoadingEarlier: false,
+      userId: 1,
+      chattingWith: 'chatbot',
+      botState: 'welcome'
     };
 
     this._isMounted = false;
@@ -29,21 +33,16 @@ export default class Example extends React.Component {
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
+    this.onBotActionClicked = this.onBotActionClicked.bind(this);
 
     this._isAlright = null;
   }
 
   componentWillMount() {
-    const allMessages = require('./data/messages.js');
-    thismsg = allMessages.find((m)=>m.key=='welcomeBack');
+    //const botMessages = require('./data/bot-messages.js');
+    this.sendBotMessage('welcome')
     
     this._isMounted = true;
-    this.setState(() => {
-      return {
-        messages: [thismsg]
-
-      };
-    });
   }
   componentWillUnmount() {
     this._isMounted = false;
@@ -70,16 +69,33 @@ export default class Example extends React.Component {
   }
 
   onSend(messages = []) {
+    
+    
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, messages),
       };
     });
 
-    // for demo purpose
+    if (this.state.botState == 'addToList' && this.state.chattingWith == 'chatbot'){
+      //TODO: add message[0] as a list item
+      this.sendBotMessage('howUrgent');
+    }
 
-    //**** TODO: Show appropriate follow-up bot message **//
-    this.answerDemo(messages);
+
+    // for demo purpose
+    //this.answerDemo(messages);
+  }
+
+  onBotActionClicked(action){
+    
+    messageToSend = botMessages.find((m)=>m.key==action);
+
+    if (messageToSend != null){
+      this.sendBotMessage(action)
+    }else{
+      //Do something else that hasn't been built yet, like show a list
+    }
   }
 
   answerDemo(messages) {
@@ -87,7 +103,7 @@ export default class Example extends React.Component {
       if ((messages[0].image || messages[0].location) || !this._isAlright) {
         this.setState((previousState) => {
           return {
-            typingText: 'React Native is typing'
+            typingText: 'Chat Bot is typing'
           };
         });
       }
@@ -96,16 +112,26 @@ export default class Example extends React.Component {
     setTimeout(() => {
       if (this._isMounted === true) {
         if (messages.length > 0) {
+          
+          if(this.state.botState == 'addingListItem'){
+            
+            
+            this.onReceive
+
+          
+          /*
           if (messages[0].image) {
             this.onReceive('Nice picture!');
           } else if (messages[0].location) {
             this.onReceive('My favorite place');
+            */
           } else {
             if (!this._isAlright) {
               this._isAlright = true;
               this.onReceive('Alright');
             }
           }
+
         }
       }
 
@@ -117,9 +143,16 @@ export default class Example extends React.Component {
     }, 1000);
   }
 
-  getBotMessage(message, key){
-    return message === key;
+  sendBotMessage(action){
+    messageToSend = botMessages.find((m)=>m.key==action);
+    this.setState((previousState) => {
+      return {
+        messages: GiftedChat.append(previousState.messages, messageToSend),
+        botState: action,
+      }
+    });
   }
+  
 
   onReceive(text) {
     this.setState((previousState) => {
@@ -137,6 +170,7 @@ export default class Example extends React.Component {
       };
     });
   }
+  
 
   renderCustomActions(props) {
     if (Platform.OS === 'ios') {
@@ -205,6 +239,7 @@ export default class Example extends React.Component {
         loadEarlier={this.state.loadEarlier}
         onLoadEarlier={this.onLoadEarlier}
         isLoadingEarlier={this.state.isLoadingEarlier}
+        onBotActionClicked={this.onBotActionClicked}
 
         user={{
           _id: 1, // sent messages should have same user._id
