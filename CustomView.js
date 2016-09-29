@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
-import botMessages from './data/bot-messages.js';
+
 
 export default class CustomView extends React.Component {
 

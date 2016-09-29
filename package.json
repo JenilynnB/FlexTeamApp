@@ -6,10 +6,21 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "react": "15.3.2",
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "pubnub": "^4.0.11",
+    "react": "^15.3.2",
+    "react-addons-css-transition-group": "^15.3.2",
+    "react-dom": "^15.3.2",
     "react-native": "0.33.0",
     "react-native-camera-roll-picker": "^1.1.8",
     "react-native-gifted-chat": "0.0.10",
     "react-native-nav": "^1.1.4"
+  },
+  "devDependencies": {
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.1"
   }
 }

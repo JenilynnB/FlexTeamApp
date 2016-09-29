@@ -5,6 +5,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import PubNub from 'pubnub';
 
 
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
@@ -12,6 +13,20 @@ import CustomActions from './CustomActions';
 import CustomView from './CustomView';
 import BotBubble from './BotBubble.js';
 import botMessages from './data/bot-messages.js';
+
+
+var username = 'Saujin';
+const channel = 'main-chat';
+
+const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
+const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
+
+const pubnub = new PubNub({                         
+  publishKey   : publish_key,
+  subscribeKey : subscribe_key,
+  ssl: true,
+  uuid: username
+});
 
 export default class Chat extends React.Component {
   constructor(props) {
@@ -39,13 +54,57 @@ export default class Chat extends React.Component {
   }
 
   componentWillMount() {
-    //const botMessages = require('./data/bot-messages.js');
-    this.sendBotMessage('welcome')
     
+    pubnub.addListener({
+      message: (m) => this.success([m.message])
+    });
+    
+    pubnub.subscribe({
+      channels: [channel],
+      //connect: this.connect,
+      //message: (m) => this.success(m),
+      connect : function(){
+          console.log("Connected")
+      },
+      disconnect : function(){
+          console.log("Disconnected")
+      },
+      reconnect : function(){
+          console.log("Reconnected")
+      },
+      error : function(){
+          console.log("Network Error")
+      }, 
+    });
+
+    this.sendBotMessage('welcome')
     this._isMounted = true;
   }
+
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  // grab data from PubNub History API when PubNub is connected for the first time
+  connect() { 
+    console.log("connected");
+    pubnub.history({
+      channel: channel,
+      count: 50,
+    });
+  }
+
+  //At the success callback, update the message list
+  success(m){
+    console.log("success");
+    console.log(m)
+    
+    this.setState((previousState) => {
+      return {
+        messages: GiftedChat.append(previousState.messages, m), 
+      };
+    });
+     
   }
 
   onLoadEarlier() {
@@ -69,28 +128,40 @@ export default class Chat extends React.Component {
   }
 
   onSend(messages = []) {
-    
-    
+    /*
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, messages),
       };
     });
-
+  */
+    
+    pubnub.publish({
+      message: messages[0],
+      channel: channel,
+      },
+      function (status, response) {
+        if (status.error) {
+          console.log(status) 
+        }else{
+          //console.log(response.timetoken)
+          console.log(status)
+        }
+        
+      }
+    );
+    
+    //If chatting with the bot, possibly do something with the message sent
     if (this.state.botState == 'addToList' && this.state.chattingWith == 'chatbot'){
       //TODO: add message[0] as a list item
       this.sendBotMessage('howUrgent');
     }
-
-
     // for demo purpose
     //this.answerDemo(messages);
   }
 
   onBotActionClicked(action){
-    
     messageToSend = botMessages.find((m)=>m.key==action);
-
     if (messageToSend != null){
       this.sendBotMessage(action)
     }else{
@@ -112,13 +183,8 @@ export default class Chat extends React.Component {
     setTimeout(() => {
       if (this._isMounted === true) {
         if (messages.length > 0) {
-          
           if(this.state.botState == 'addingListItem'){
-            
-            
-            this.onReceive
-
-          
+            this.onReceive          
           /*
           if (messages[0].image) {
             this.onReceive('Nice picture!');
@@ -131,7 +197,6 @@ export default class Chat extends React.Component {
               this.onReceive('Alright');
             }
           }
-
         }
       }
 
@@ -145,14 +210,8 @@ export default class Chat extends React.Component {
 
   sendBotMessage(action){
     messageToSend = botMessages.find((m)=>m.key==action);
-    this.setState((previousState) => {
-      return {
-        messages: GiftedChat.append(previousState.messages, messageToSend),
-        botState: action,
-      }
-    });
+    this.onSend([messageToSend]);
   }
-  
 
   onReceive(text) {
     this.setState((previousState) => {
@@ -171,7 +230,6 @@ export default class Chat extends React.Component {
     });
   }
   
-
   renderCustomActions(props) {
     if (Platform.OS === 'ios') {
       return (
