@@ -6,6 +6,7 @@ import {
   View,
 } from 'react-native'
 import Chat from './Chat.js'
+import CreateUser from './CreateUser.js'
 
 export default class TabBar extends React.Component {
   state = {
@@ -72,7 +73,8 @@ export default class TabBar extends React.Component {
               });
           }}
           >
-          {this._renderContent("Search")}
+          <CreateUser/>
+          
         </TabBarIOS.Item>
       </TabBarIOS>
     );

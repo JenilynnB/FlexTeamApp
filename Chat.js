@@ -55,6 +55,9 @@ export default class Chat extends React.Component {
 
   componentWillMount() {
     
+    //TODO: Get list of chat channels user is subscribed to
+    //TODO: If no chat channel exists, create a new one
+
     pubnub.addListener({
       message: (m) => this.success([m.message])
     });
@@ -268,6 +271,7 @@ export default class Chat extends React.Component {
 
   render() {
     return (
+      <View style={styles.container}>
       <GiftedChat
         messages={this.state.messages}
         onSend={this.onSend}
@@ -285,6 +289,7 @@ export default class Chat extends React.Component {
         renderCustomView={this.renderCustomView}
         renderFooter={this.renderFooter}
       />
+      </View>
     );
   }
 }
@@ -300,4 +305,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#aaa',
   },
+  container: {
+    marginBottom: 50,
+    flex: 1
+  }
 });
