@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native'
 import Chat from './Chat.js'
-import CreateUser from './CreateUser.js'
+//import CreateUser from './CreateUser.js'
 
 export default class TabBar extends React.Component {
   state = {
@@ -73,7 +73,6 @@ export default class TabBar extends React.Component {
               });
           }}
           >
-          <CreateUser/>
           
         </TabBarIOS.Item>
       </TabBarIOS>

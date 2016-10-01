@@ -4,26 +4,57 @@ import {
   TabBarIOS,
   Text,
   View,
+  Navigator
 } from 'react-native'
 
 import TabBar from './TabBar.js'
-import IntroScreens from './IntroScreens.js'
-//import CreateUser from './CreateUser.js'
+import {LoginPage, CreateUserPage, CreateProfilePage} from './CreateAccount-Login.js'
 
 export default class App extends React.Component {
+  
   state = {
     userIsLoggedIn: false,
+    user: null,
+  }
+
+  componentWillMount() {
+      //TODO: see if the user is logged in
+      //If the user is logged in, set the user state in the app  
   }
 
   render(){
     return (
-      <View style={styles.container}>
-        {
-          (this.state.userIsLoggedIn)? <TabBar /> : <IntroScreens />
-        }
-      </View>
-      
+      <Navigator
+        initialRoute ={{id: 'LoginPage', name: 'Index'}}
+        renderScene={this.renderScene.bind(this)}
+        configureScene={(route) => {
+            if (route.sceneConfig) {
+              return route.sceneConfig;
+            }
+            return Navigator.SceneConfigs.FloatFromRight;
+          }} />
+    )
+  }
+
+  renderScene(route, navigator) {
+    var routeID = route.id;
+    console.log(routeID);
+    if (routeID === 'LoginPage') {
+      return (
+        <LoginPage
+          navigator = {navigator} />
+      );
+    } if (routeID === 'CreateUserPage'){
+      return(
+        <CreateUserPage
+          navigator = {navigator} />
       )
+    } if (routeID === 'CreateProfilePage') {
+      return (
+        <CreateProfilePage
+          navigator = {navigator} />
+        )
+    }
   }
 }
 

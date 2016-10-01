@@ -5,9 +5,10 @@ import {
   TextInput,
   View,
   TouchableHighlight,
+  Navigator
 } from 'react-native'
 
-export default class CreateUser extends React.Component{
+export class CreateUserPage extends React.Component{
 	state = {
 		emailText: "",
 		passwordText: ""
@@ -18,8 +19,24 @@ export default class CreateUser extends React.Component{
 		//TODO: Verify correct email format
 		//console.log(this.state.emailText);
 		//console.log(this.state.passwordText);
+		this.navigateToCreateProfilePage()
 	}
 
+	navigateToLoginPage(){
+		var navigator = this.props.navigator;
+		navigator.replace({
+        id: 'LoginPage',
+        name: 'Login',
+      });
+	}
+
+	navigateToCreateProfilePage(){
+		var navigator = this.props.navigator;
+		navigator.replace({
+        id: 'CreateProfilePage',
+        name: 'Create Profile',
+      });
+	}
 
 	render(){
 		return (
@@ -38,25 +55,26 @@ export default class CreateUser extends React.Component{
 							style={styles.textbox}/></View>
 						<TouchableHighlight 
 							style={styles.button}
-							onPress={this.submitForm}
+							onPress={this.submitForm.bind(this)}
 							>
 								<Text style={styles.buttonText}>NEXT</Text>
 						</TouchableHighlight>
 					</View>
 					<View style={styles.footer}>
-						<TouchableHighlight >
+						<TouchableHighlight onPress={this.navigateToLoginPage.bind(this)}>
 								<Text style={styles.loginText}>Already have an account? 
 									<Text style={styles.loginLink}> Log in here.</Text>
 								</Text>
 						</TouchableHighlight>
 					</View>
 				</View>
+				
 			)
 	}
 
 }
 
-class CreateProfile extends React.Component{
+export class CreateProfilePage extends React.Component{
 	state = {
 		nameText: "",
 		professionText: ""
@@ -90,18 +108,18 @@ class CreateProfile extends React.Component{
 					</TouchableHighlight>
 				</View>
 				<View style={styles.footer}>
-						<TouchableHighlight >
-								<Text style={styles.loginText}>Already have an account? 
-									<Text style={styles.loginLink}> Log in here.</Text>
-								</Text>
-						</TouchableHighlight>
-					</View>
+					<TouchableHighlight >
+						<Text style={styles.loginText}>Already have an account? 
+							<Text style={styles.loginLink}> Log in here.</Text>
+						</Text>
+					</TouchableHighlight>
+				</View>
 			</View>
 		)
 	}
 }
 
-export class Login extends React.Component{
+export class LoginPage extends React.Component{
 	state = {
 		emailText: "",
 		passwordText: ""
@@ -114,12 +132,49 @@ export class Login extends React.Component{
 		//console.log(this.state.passwordText);
 	}
 
+	navigateToCreateAccountPage(){
+		var navigator = this.props.navigator;
+		navigator.replace({
+        id: 'CreateUserPage',
+        name: 'Create Account',
+      });
+	}
 
 	render(){
 		return (
+				
 				<View style={styles.container}>
-					
+					<View style={styles.formContainer}>
+						<Text style={styles.heading}>Login</Text>
+						<View><TextInput  
+							placeholder="Your Email"
+							keyboardType="email-address"
+							onChangeText={(text) => this.setState({emailText: text})}
+							style={styles.textbox} /></View>
+						<View><TextInput 
+							placeholder="Password"
+							secureTextEntry={true}
+							onChangeText={(text) => this.setState({passwordText: text})}
+							style={styles.textbox}/></View>
+						<TouchableHighlight 
+							style={styles.button}
+							onPress={this.submitForm}
+							>
+								<Text style={styles.buttonText}>LOGIN</Text>
+						</TouchableHighlight>
+						<TouchableHighlight>
+							<Text style={styles.linkText}>I forgot my password</Text>
+						</TouchableHighlight>
+					</View>
+					<View style={styles.footer}>
+					<TouchableHighlight onPress={this.navigateToCreateAccountPage.bind(this)}>
+						<Text style={styles.loginText}>Dont Have an account? 
+							<Text style={styles.loginLink}> Start a project with us.</Text>
+						</Text>
+					</TouchableHighlight>
 				</View>
+				</View>
+				
 			)
 	}
 
