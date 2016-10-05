@@ -24,12 +24,15 @@ export default class TabBar extends React.Component {
   render() {
     return (
       <TabBarIOS selectedTab={this.state.selectedTab}
-        unselectedTintColor="#ffffff"
-        tintColor="#ffe429"
-        barTintColor="#294163">
+        unselectedTintColor="#e2e2e2"
+        tintColor="#fff"
+        barTintColor="#294163"
+        style={styles.tabBar}>
         <TabBarIOS.Item 
-          title="Flex Chat"
-          systemIcon="history"
+          icon={require('./icons/chat.png')}
+          selectedIcon={require('./icons/chat.png')}
+          style={styles.addButton}
+          title="FLEX CHAT"
           selected={this.state.selectedTab==='chat'}
           onPress={() => {
               this.setState({
@@ -39,9 +42,12 @@ export default class TabBar extends React.Component {
           >
           <Chat/>
         </TabBarIOS.Item>
+
         <TabBarIOS.Item 
-          title="My List"
-          systemIcon="bookmarks"
+          title="MY LIST"
+          icon={require('./icons/list.png')}
+          selectedIcon={require('./icons/list.png')}
+          style={styles.iconText}
           selected={this.state.selectedTab==='list'}
           onPress={() => {
               this.setState({
@@ -51,9 +57,27 @@ export default class TabBar extends React.Component {
           >
           {this._renderContent("My List")}
         </TabBarIOS.Item>
+
         <TabBarIOS.Item 
-          title="Projects"
-          systemIcon="favorites"
+          icon={require('./icons/add.png')}
+          selectedIcon={require('./icons/add.png')}
+          renderAsOriginal
+          style={styles.addButton}
+          selected={this.state.selectedTab==='add'}
+          onPress={() => {
+              this.setState({
+                  selectedTab: 'add',
+              });
+          }}
+          >
+          {this._renderContent("Add List Item")}
+        </TabBarIOS.Item>
+
+        <TabBarIOS.Item 
+          title="PROJECTS"
+          icon={require('./icons/projects.png')}
+          selectedIcon={require('./icons/projects.png')}
+          style={styles.iconText}
           selected={this.state.selectedTab==='projects'}
           onPress={() => {
               this.setState({
@@ -64,8 +88,10 @@ export default class TabBar extends React.Component {
           {this._renderContent("Projects")}
         </TabBarIOS.Item>
         <TabBarIOS.Item 
-          title="Search"
-          systemIcon="search"
+          title="SEARCH"
+          icon={require('./icons/search.png')}
+          imageInsets={[0,2,0,6]}
+          selectedIcon={require('./icons/search.png')}
           selected={this.state.selectedTab==='search'}
           onPress={() => {
               this.setState({
@@ -73,7 +99,7 @@ export default class TabBar extends React.Component {
               });
           }}
           >
-          
+          {this._renderContent("Search")}
         </TabBarIOS.Item>
       </TabBarIOS>
     );
@@ -85,9 +111,22 @@ var styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  tabBar: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  addButton:{
+    marginBottom: -5,
+    bottom: -5
   },
   tabText: {
     color: 'darkslategrey',
     margin: 50,
   },
+
 });

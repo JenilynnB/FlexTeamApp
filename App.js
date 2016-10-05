@@ -1,20 +1,31 @@
+/**
+npm components to install
+react-native
+react-validation
+*/
+
+
 import React from 'react'
 import {
   StyleSheet,
   TabBarIOS,
   Text,
   View,
-  Navigator
+  Navigator,
+  StatusBar
 } from 'react-native'
 
 import TabBar from './TabBar.js'
-import {LoginPage, CreateUserPage, CreateProfilePage} from './CreateAccount-Login.js'
+import LoginPage from './LoginPage.js'
+import CreateUserPage from './CreateUserPage.js'
+import CreateProfilePage from './CreateProfilePage.js'
 
 export default class App extends React.Component {
   
   state = {
     userIsLoggedIn: false,
     user: null,
+    
   }
 
   componentWillMount() {
@@ -23,9 +34,15 @@ export default class App extends React.Component {
   }
 
   render(){
+
     return (
+      <View style={styles.container}>
+      <StatusBar
+        backgroundColor="#FFE630"
+        barStyle="light-content"
+      />
       <Navigator
-        initialRoute ={{id: 'LoginPage', name: 'Index'}}
+        initialRoute ={{id: 'TabBar', name: 'Login'}}
         renderScene={this.renderScene.bind(this)}
         configureScene={(route) => {
             if (route.sceneConfig) {
@@ -33,13 +50,14 @@ export default class App extends React.Component {
             }
             return Navigator.SceneConfigs.FloatFromRight;
           }} />
+      </View>
     )
   }
 
   renderScene(route, navigator) {
     var routeID = route.id;
-    console.log(routeID);
     if (routeID === 'LoginPage') {
+      console.log("here");
       return (
         <LoginPage
           navigator = {navigator} />
@@ -52,6 +70,11 @@ export default class App extends React.Component {
     } if (routeID === 'CreateProfilePage') {
       return (
         <CreateProfilePage
+          navigator = {navigator} />
+        )
+    } if (routeID === 'TabBar') { 
+      return (
+        <TabBar
           navigator = {navigator} />
         )
     }

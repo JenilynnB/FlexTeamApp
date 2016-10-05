@@ -51,5 +51,11 @@
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Accessing photos to send in chat</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>OpenSans</string>
+		<string>OpenSans-Regular.ttf</string>
+		<string>OpenSans-Bold.ttf</string>
+	</array>
 </dict>
 </plist>
