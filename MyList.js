@@ -89,29 +89,50 @@ export default class MyList extends React.Component{
 	//Pubnub success callback
 	success(m){
 		
+		var ds = this.state.dataSource;
+		var dataBlob = ds._dataBlob;
+		var sectionIDs = ds.sectionIdentities;
+		var rowIDs = ds.rowIdentities;
+		
+		/*
 		var dataBlob = {},
 			sectionIDs = [],
 			rowIDs = [[],[],[]],
 			item;
-
-
+		*/
 
 		/* The list sectionsIDs and rowIDs have to be the same length arrays (not associative) arrays either.
 		 * The datablob holds the key-value pairs for the section header values. React
 		 * Native is very stupid and hacky with sectioned lists right now.
 		*/
+
 		//List sections are pre-assigned, as we know all the headers and empty sections will be displayed.
 		for (var i = 0 ; i < listSections.length; i++){
-			sectionIDs.push("ID"+i);
-			dataBlob["ID"+i] = listSections[i];
+			if (sectionIDs["ID"+i] === null){
+				sectionIDs.push("ID"+i);
+			}
+			if (dataBlob["ID"+i] === null){
+				dataBlob["ID"+i] = listSections[i];
+			}
 		}
 
 		for (var i = 0; i<m.length; i++) {
 			var item = m[i];
 			
-			rowIDs[item.list].push(item._id);
-			
-			dataBlob["ID"+item.list+":row"+item._id] = item.text;
+			var itemExists = false;
+			for (id in rowIDs){
+				if (item._id == id) {
+					itemExists = true;
+				}
+			}
+
+			if (!itemExists){
+				rowIDs[item.list].push(item._id);
+			}
+
+			if (dataBlob["ID"+item.list+":row"+item._id] === undefined){
+				dataBlob["ID"+item.list+":row"+item._id] = item.text;
+			}
 			
 		}
 
