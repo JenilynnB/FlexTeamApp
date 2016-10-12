@@ -6,8 +6,8 @@ import {
   TouchableHighlight,
   ListView,
 } from 'react-native'
-
 import PubNub from 'pubnub';
+import { Icon } from 'react-native-elements'
 
 var username = 'Saujin';
 const channel = 'list';
@@ -156,16 +156,38 @@ export default class MyList extends React.Component{
 		
 	}
 
-	render(){
+	_renderRow(rowData){
+		return(
+			<TouchableHighlight >
+				<View style={styles.rowContainer}	>
+					<Text style={styles.rowText}>{rowData}</Text>
+					<View style={styles.chevronContainer}>
+						<Icon
+		          style={styles.chevron}
+		          size={28}
+		          name={'chevron-right'}
+		          color={'#66A1E6'} />
+		      </View>
+	      </View>
+			</TouchableHighlight>
+		);
+	}
 
+	_renderSectionHeader(headerData){
+		return(
+			<Text style={styles.header}>{headerData}</Text>
+		);
+	}
+
+	render(){
 		//console.log("data source");
 		//console.log(this.state.dataSource);
 		return(
 			<View style={styles.container}>
 				<ListView
 					dataSource = {this.state.dataSource}
-					renderRow = {(rowData) => <View style={styles.rowContainer}><Text style={styles.rowText}>{rowData}</Text></View>}
-					renderSectionHeader = {(headerData) => <Text style={styles.header}>{headerData}</Text>}
+					renderRow = {this._renderRow.bind(this)}
+					renderSectionHeader = {this._renderSectionHeader.bind(this)}
 					enableEmptySections = {true}
 				/>
 			</View>
@@ -180,20 +202,24 @@ export default class MyList extends React.Component{
 var styles = StyleSheet.create ({
 
 	container: {
-		marginTop: 100,
+		//marginTop: 100,
 		backgroundColor: '#f1f0f0',
+		flex: 1,
+		paddingTop: 64,
 		//TODO: Background color needs to be made to 40% opacity
 	},
 	rowContainer:{
 		borderWidth: 1,
 		borderColor: "#e2e2e2",
 		borderRadius: 4,
-		padding: 15,
+		padding: 10,
+		paddingLeft: 15,
 		backgroundColor: "#fff",
 		marginLeft: 4,
 		marginRight: 4,
-		marginTop: 2,
-		marginBottom: 2
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
 	},
 	rowText:{
 		color:"#66A1E6",
@@ -206,5 +232,14 @@ var styles = StyleSheet.create ({
 		fontFamily: "OpenSans",
 		padding: 8,
 
-	}
+	},
+	chevronContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+
+  },
+  chevron: {
+  }
+
 })

@@ -273,10 +273,6 @@ export default class Chat extends React.Component {
   }
 
 
-  renderScene(route, navigator){
-    
-  }
-
   render() {
 
     return(
@@ -312,29 +308,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#aaa',
   },
-  navBar: {
-    backgroundColor: '#294163',
-    
-  },
-  navBarButton: {
-    height: 40,
-      width: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navBarTitleView: {
-    flex: 1,
-    flexDirection: "row",
-  },
-  navBarTitleText: {
-    color: "#fff",
-    fontSize: 20,
-    fontFamily: "OpenSans"
-  },
-  container: {
-    //marginBottom: 50,
-    flex: 1,
-    backgroundColor: '#ffffff',
-
-  }
 });

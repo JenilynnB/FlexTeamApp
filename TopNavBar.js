@@ -7,6 +7,7 @@ import {
   Image,
   TouchableHighlight
 } from 'react-native';
+import MyList from './MyList.js'
 import SideMenu from 'react-native-side-menu';
 import Menu from './Menu.js';
 import Chat from './Chat.js';
@@ -15,6 +16,7 @@ export default class TopNavBar extends React.Component{
 	constructor(props) {
     super(props);
     this.state = {
+    	//scene: ''
     	menuIsOpen: false,
       selectedMenuItem: 'Profile',
     };
@@ -38,11 +40,31 @@ export default class TopNavBar extends React.Component{
   }
 
   renderScene(route, Navigator){
-  	return(
-  		<Chat />
-  	);
+  	 if (this.props.scene === "chat"){
+	  	return(
+	  		<Chat />
+	  	);
+	  }else if (this.props.scene === 'list'){
+	  	return(
+	  		<MyList />
+	  	);
+	  }
   }
 
+  renderTitle(route, navigator, index, navState){
+		if (this.props.scene === "chat"){
+			return (
+		    <View style={styles.navBarTitleView}>
+		      <Image source={require('./icons/logo.png')}/>
+		      <Text style={styles.navBarTitleText}> FlexTeam</Text>
+		    </View>
+		   ); 
+		}else if (this.props.scene === 'list'){
+			return (
+				<Text style={styles.navBarTitleText}>My List</Text>
+			);
+		}
+  }
 
 	render(){
 		return(
@@ -66,15 +88,10 @@ export default class TopNavBar extends React.Component{
 		                  <Image source={require('./icons/more.png')}/>
 		                </TouchableHighlight>
 		                ); },
-		            Title: (route, navigator, index, navState) =>
-		              { return (
-		                  <View style={styles.navBarTitleView}>
-		                    <Image source={require('./icons/logo.png')}/>
-		                    <Text style={styles.navBarTitleText}> FlexTeam</Text>
-		                  </View>); 
-		              },
+		            Title: this.renderTitle.bind(this),
 		            }}
 		          style={styles.navBar}
+		          
 		        />
 		      }
 		    />
@@ -88,7 +105,6 @@ export default class TopNavBar extends React.Component{
 const styles = StyleSheet.create({
 	navBar: {
     backgroundColor: '#294163',
-    
   },
   navBarButton: {
     height: 40,

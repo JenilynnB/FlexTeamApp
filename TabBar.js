@@ -41,7 +41,7 @@ export default class TabBar extends React.Component {
           onPress={() => this.changeTab('chat')}
           selected={this.state.selectedTab==='chat'}
           >
-          <TopNavBar />
+          <TopNavBar scene='chat'/>
         </Tab>
 
         <Tab
@@ -53,7 +53,7 @@ export default class TabBar extends React.Component {
           onPress={() => this.changeTab('list')}
           selected={this.state.selectedTab==='list'}
           >
-          <MyList />
+          <TopNavBar scene='list'/>
         </Tab>
 
 
