@@ -9,6 +9,7 @@ import TabNavigator from 'react-native-tab-navigator';
 import LoginPage from './LoginPage.js'
 import Chat from './Chat.js'
 import MyList from './MyList.js'
+import TopNavBar from './TopNavBar.js'
 
 import { Tabs, Tab, Icon } from 'react-native-elements'
 
@@ -40,7 +41,7 @@ export default class TabBar extends React.Component {
           onPress={() => this.changeTab('chat')}
           selected={this.state.selectedTab==='chat'}
           >
-          <Chat />
+          <TopNavBar />
         </Tab>
 
         <Tab

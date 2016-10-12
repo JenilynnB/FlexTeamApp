@@ -56,15 +56,15 @@ export default class MyList extends React.Component{
 
 	componentWillMount() {
 
+		this.connect();
+
 	  pubnub.addListener({
       message: (m) => this.success([m.message])
     });
 	    
     pubnub.subscribe({
       channels: [channel],
-    });
-
-    //this.connect();
+    });    
 	}
 
 
@@ -73,21 +73,34 @@ export default class MyList extends React.Component{
 	    
 	    pubnub.history(
 	    	{
-	      	channel: channel,
+	      	channel: 'list',
 	      	count: 50,
-	      	callback: (status, response) => this.setState(this.success(response.messages)),
+	      	callback: (response) => {
+	      		console.log("callback");
+	      		//console.log(status);
+	      		console.log(response);
+	      		//this.success(response.messages),
+	      	}
+	      	/*
+	      	callback: (status, response) => {
+	      		console.log("callback");
+	      		console.log(status);
+	      		console.log(response);
+	      		//this.success(response.messages),
+	      	}*/
 	    	}
-	    	
-	    	//function (status, response) {
-	      	//this.state = this.success(response.messages);
-	      	//this.setState(this.success(response.messages));
-	    	//}
-
+	    	/*
+	    	function (status, response) {
+	      	this.state = this.success(response.messages);
+	      	this.setState(this.success(response.messages));
+	    	}
+	    	*/
 	    );
 	}
 
 	//Pubnub success callback
 	success(m){
+		console.log("success");
 		
 		var ds = this.state.dataSource;
 		var dataBlob = ds._dataBlob;
@@ -133,7 +146,6 @@ export default class MyList extends React.Component{
 			if (dataBlob["ID"+item.list+":row"+item._id] === undefined){
 				dataBlob["ID"+item.list+":row"+item._id] = item.text;
 			}
-			
 		}
 
 		this.setState({
@@ -146,8 +158,8 @@ export default class MyList extends React.Component{
 
 	render(){
 
-		console.log("data source");
-		console.log(this.state.dataSource);
+		//console.log("data source");
+		//console.log(this.state.dataSource);
 		return(
 			<View style={styles.container}>
 				<ListView

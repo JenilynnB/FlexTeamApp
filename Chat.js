@@ -11,7 +11,7 @@ import {
 import SideMenu from 'react-native-side-menu'
 import PubNub from 'pubnub';
 
-import Menu from './Menu.js';
+
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';
 import CustomView from './CustomView';
@@ -43,8 +43,6 @@ export default class Chat extends React.Component {
       userId: 1,
       chattingWith: 'chatbot',
       botState: 'welcome',
-      menuIsOpen: false,
-      selectedMenuItem: 'Profile',
     };
 
     this._isMounted = false;
@@ -274,24 +272,13 @@ export default class Chat extends React.Component {
     return null;
   }
 
-  toggleMenu() {
-    this.setState({
-      menuIsOpen: !this.state.menuIsOpen,
-    });
-  }
-
-  updateMenuState(menuIsOpen) {
-    this.setState({ menuIsOpen, });
-  }
-
-  onMenuItemSelected = (menuItem) => {
-    this.setState({
-      menuIsOpen: false,
-      selectedMenuItem: menuItem,
-    });
-  }
 
   renderScene(route, navigator){
+    
+  }
+
+  render() {
+
     return(
       <GiftedChat
         messages={this.state.messages}
@@ -311,47 +298,6 @@ export default class Chat extends React.Component {
         renderFooter={this.renderFooter}
       />
       );
-  }
-
-  render() {
-
-    return (
-      <SideMenu
-        menu={<Menu onItemSelected={this.onMenuItemSelected} />}
-        isOpen={this.state.menuIsOpen}
-        menuPosition='right'
-        onChange={(isOpen) => this.updateMenuState(isOpen)}
-        >
-      <View style={styles.container}>
-        <Navigator 
-          renderScene={this.renderScene.bind(this)}
-          navigationBar={
-            <Navigator.NavigationBar
-              routeMapper={{
-                LeftButton: (route, navigator, index, navState) =>
-                  {  },
-                RightButton: (route, navigator, index, navState) =>
-                  { return (
-                    <TouchableHighlight style={styles.navBarButton} onPress={() => this.toggleMenu()}>
-                      <Image source={require('./icons/more.png')}/>
-                    </TouchableHighlight>
-                    ); },
-                Title: (route, navigator, index, navState) =>
-                  { return (
-                      <View style={styles.navBarTitleView}>
-                        <Image source={require('./icons/logo.png')}/>
-                        <Text style={styles.navBarTitleText}> FlexTeam</Text>
-                      </View>); 
-                  },
-                }}
-              style={styles.navBar}
-            />
-          }
-        />
-      
-      </View>
-      </SideMenu>
-    );
   }
 }
 
