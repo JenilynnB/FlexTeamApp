@@ -1,107 +1,102 @@
 import React from 'react'
 import {
   StyleSheet,
-  TabBarIOS,
   Text,
   View,
+  Image,
 } from 'react-native'
+import TabNavigator from 'react-native-tab-navigator';
+import LoginPage from './LoginPage.js'
 import Chat from './Chat.js'
-//import CreateUser from './CreateUser.js'
+import MyList from './MyList.js'
+
+import { Tabs, Tab, Icon } from 'react-native-elements'
+
 
 export default class TabBar extends React.Component {
-  state = {
-    selectedTab: 'chat'
+  constructor(props){
+    super(props);
+    this.state = {
+      selectedTab: 'chat'
+    }
+
   }
 
-  _renderContent = (pageText: string) => {
-    return (
-      <View style={[styles.tabContent]}>
-        <Text style={styles.tabText}>This will be the {pageText} page</Text>
-      </View>
-    );
-  };
+  changeTab (selectedTab) {
+    this.setState({selectedTab})
+  }
 
   render() {
     return (
-      <TabBarIOS selectedTab={this.state.selectedTab}
-        unselectedTintColor="#e2e2e2"
-        tintColor="#fff"
-        barTintColor="#294163"
-        style={styles.tabBar}>
-        <TabBarIOS.Item 
-          icon={require('./icons/chat.png')}
-          selectedIcon={require('./icons/chat.png')}
-          style={styles.addButton}
+      
+      <Tabs tabBarStyle={styles.tabBar}>
+        <Tab 
           title="FLEX CHAT"
+          renderIcon={() => (<Image source={require('./icons/chat.png')} />) }
+          renderSelectedIcon={() => <Image source={require('./icons/chat.png')} />}
+          titleStyle={styles.tabTitle}
+          selectedTitleStyle={styles.selectedTabTitle}
+          tabStyle={styles.tab}
+          onPress={() => this.changeTab('chat')}
           selected={this.state.selectedTab==='chat'}
-          onPress={() => {
-              this.setState({
-                  selectedTab: 'chat',
-              });
-          }}
           >
-          <Chat/>
-        </TabBarIOS.Item>
+          <Chat />
+        </Tab>
 
-        <TabBarIOS.Item 
+        <Tab
+          renderIcon={() => (<Image source={require('./icons/list.png')} />) }
+          renderSelectedIcon={() => <Image source={require('./icons/list.png')} />}
           title="MY LIST"
-          icon={require('./icons/list.png')}
-          selectedIcon={require('./icons/list.png')}
-          style={styles.iconText}
+          titleStyle={styles.tabTitle}
+          tabStyle={styles.tab}
+          onPress={() => this.changeTab('list')}
           selected={this.state.selectedTab==='list'}
-          onPress={() => {
-              this.setState({
-                  selectedTab: 'list',
-              });
-          }}
           >
-          {this._renderContent("My List")}
-        </TabBarIOS.Item>
+          <MyList />
+        </Tab>
 
-        <TabBarIOS.Item 
-          icon={require('./icons/add.png')}
-          selectedIcon={require('./icons/add.png')}
-          renderAsOriginal
-          style={styles.addButton}
+
+        <Tab
+          renderIcon={() => (<Image source={require('./icons/add.png')} />) }
+          renderSelectedIcon={() => <Image source={require('./icons/add.png')} />}
+          tabStyle={styles.addButton}
+          onPress={() => this.changeTab('add')}
           selected={this.state.selectedTab==='add'}
-          onPress={() => {
-              this.setState({
-                  selectedTab: 'add',
-              });
-          }}
           >
-          {this._renderContent("Add List Item")}
-        </TabBarIOS.Item>
+          <View>
+          </View>
+        </Tab>
 
-        <TabBarIOS.Item 
+        <Tab 
+          renderIcon={() => (<Image source={require('./icons/projects.png')} />) }
+          renderSelectedIcon={() => <Image source={require('./icons/projects.png')} />}
+          
           title="PROJECTS"
-          icon={require('./icons/projects.png')}
-          selectedIcon={require('./icons/projects.png')}
-          style={styles.iconText}
+          titleStyle={styles.tabTitle}
+          tabStyle={styles.tab}
+          onPress={() => this.changeTab('projects')}
           selected={this.state.selectedTab==='projects'}
-          onPress={() => {
-              this.setState({
-                  selectedTab: 'projects',
-              });
-          }}
           >
-          {this._renderContent("Projects")}
-        </TabBarIOS.Item>
-        <TabBarIOS.Item 
+          <View>
+          </View>
+        </Tab>
+
+        <Tab 
+          renderIcon={() => (<Image source={require('./icons/search.png')} />) }
+          renderSelectedIcon={() => <Image source={require('./icons/search.png')} />}
           title="SEARCH"
-          icon={require('./icons/search.png')}
-          imageInsets={[0,2,0,6]}
-          selectedIcon={require('./icons/search.png')}
+          titleStyle={styles.tabTitle}
+          tabStyle={styles.tab}
+          onPress={() => this.changeTab('search')}
           selected={this.state.selectedTab==='search'}
-          onPress={() => {
-              this.setState({
-                  selectedTab: 'search',
-              });
-          }}
           >
-          {this._renderContent("Search")}
-        </TabBarIOS.Item>
-      </TabBarIOS>
+          <View>
+          </View>
+        </Tab>
+
+      </Tabs>
+
+      
     );
   }
 }
@@ -112,21 +107,27 @@ var styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#000'
   },
   
   tabBar: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#294163',    
   },
-  
+  tab:{
+    marginTop: 2,
+  },
   addButton:{
     marginBottom: -5,
     bottom: -5
   },
-  tabText: {
-    color: 'darkslategrey',
-    margin: 50,
+  tabTitle: {
+    color: '#ffffff', 
   },
+  selectedTabTitle: {
+    color: "#979797",
+  }
 
 });

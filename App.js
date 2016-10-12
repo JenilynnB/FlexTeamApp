@@ -19,13 +19,14 @@ import TabBar from './TabBar.js'
 import LoginPage from './LoginPage.js'
 import CreateUserPage from './CreateUserPage.js'
 import CreateProfilePage from './CreateProfilePage.js'
+import Chat from './Chat.js'
 
 export default class App extends React.Component {
   
   state = {
     userIsLoggedIn: false,
     user: null,
-    
+
   }
 
   componentWillMount() {
@@ -42,7 +43,7 @@ export default class App extends React.Component {
         barStyle="light-content"
       />
       <Navigator
-        initialRoute ={{id: 'TabBar', name: 'Login'}}
+        initialRoute ={{id: 'TabBar', name: 'TabBar'}}
         renderScene={this.renderScene.bind(this)}
         configureScene={(route) => {
             if (route.sceneConfig) {
@@ -57,7 +58,6 @@ export default class App extends React.Component {
   renderScene(route, navigator) {
     var routeID = route.id;
     if (routeID === 'LoginPage') {
-      console.log("here");
       return (
         <LoginPage
           navigator = {navigator} />
@@ -76,6 +76,10 @@ export default class App extends React.Component {
       return (
         <TabBar
           navigator = {navigator} />
+        )
+    } if (routeID === 'Chat') { 
+      return (
+        <Chat />
         )
     }
   }

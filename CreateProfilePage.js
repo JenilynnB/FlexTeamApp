@@ -6,6 +6,7 @@ import {
   View,
   TouchableHighlight,
   Navigator,
+  Image,
 } from 'react-native'
 
 
@@ -36,6 +37,12 @@ export default class CreateProfilePage extends React.Component{
 			<View style={styles.container}>
 				
 				<View style={styles.formContainer}>
+					<TouchableHighlight >
+						<View style={profileStyles.imageContainer}>
+							<Image style={profileStyles.image} source={require('./images/addphoto.png')}/>
+							<Text style={profileStyles.text}>PHOTO</Text>
+						</View>
+					</TouchableHighlight>
 					<View><TextInput  
 						placeholder="Full Name"
 						onChangeText={(text) => this.setState({nameText: text})}
@@ -51,6 +58,8 @@ export default class CreateProfilePage extends React.Component{
 							<Text style={styles.buttonText}>CREATE ACCOUNT</Text>
 					</TouchableHighlight>
 				</View>
+				<View style={styles.bottomContentContainer}>
+				</View>
 				<View style={styles.footer}>
 					<TouchableHighlight onPress={this.navigateToLoginPage.bind(this)}>
 						<Text style={styles.loginText}>Already have an account? 
@@ -63,66 +72,31 @@ export default class CreateProfilePage extends React.Component{
 	}
 }
 
-export class LoginPage extends React.Component{
-	state = {
-		emailText: "",
-		passwordText: ""
-	}
 
-	submitForm(){
-		//TODO: Verify fields are non-empty
-		//TODO: Verify correct email format
-		//console.log(this.state.emailText);
-		//console.log(this.state.passwordText);
-	}
 
-	navigateToCreateAccountPage(){
-		var navigator = this.props.navigator;
-		navigator.replace({
-        id: 'CreateUserPage',
-        name: 'Create Account',
-      });
+var profileStyles = StyleSheet.create ({
+	
+	imageContainer: {
+		borderWidth: 1,
+		borderColor: "#fff",
+		borderRadius: 200,
+		paddingTop: 15,
+		paddingBottom: 15,	
+		paddingLeft: 25,
+		paddingRight: 25,
+		//flex: 1,
+		alignItems: "center",
+		margin: 10,
+	},
+	image: {
+		margin: 5,
+	},
+	text: {
+		fontSize: 12,
+		color: "#fff",
+		padding: 3
 	}
-
-	render(){
-		return (
-				
-				<View style={styles.container}>
-					<View style={styles.formContainer}>
-						<Text style={styles.heading}>Login</Text>
-						<View><TextInput  
-							placeholder="Your Email"
-							keyboardType="email-address"
-							onChangeText={(text) => this.setState({emailText: text})}
-							style={styles.textbox} /></View>
-						<View><TextInput 
-							placeholder="Password"
-							secureTextEntry={true}
-							onChangeText={(text) => this.setState({passwordText: text})}
-							style={styles.textbox}/></View>
-						<TouchableHighlight 
-							style={styles.button}
-							onPress={this.submitForm}
-							>
-								<Text style={styles.buttonText}>LOGIN</Text>
-						</TouchableHighlight>
-						<TouchableHighlight>
-							<Text style={styles.linkText}>I forgot my password</Text>
-						</TouchableHighlight>
-					</View>
-					<View style={styles.footer}>
-					<TouchableHighlight onPress={this.navigateToCreateAccountPage.bind(this)}>
-						<Text style={styles.loginText}>Dont Have an account? 
-							<Text style={styles.loginLink}> Start a project with us.</Text>
-						</Text>
-					</TouchableHighlight>
-				</View>
-				</View>
-				
-			)
-	}
-
-}
+})
 
 var styles = require('./intro-styles.js')
 

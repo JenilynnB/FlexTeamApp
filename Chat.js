@@ -82,7 +82,6 @@ export default class Chat extends React.Component {
 
   // grab data from PubNub History API when PubNub is connected for the first time
   connect() { 
-    console.log("connected");
     pubnub.history({
       channel: channel,
       count: 50,
@@ -316,14 +315,12 @@ export default class Chat extends React.Component {
 
   render() {
 
-    console.log(this.state.menuIsOpen)
-
     return (
       <SideMenu
         menu={<Menu onItemSelected={this.onMenuItemSelected} />}
         isOpen={this.state.menuIsOpen}
         menuPosition='right'
-        //onChange={(isOpen) => this.updateMenuState(isOpen)}
+        onChange={(isOpen) => this.updateMenuState(isOpen)}
         >
       <View style={styles.container}>
         <Navigator 
@@ -389,7 +386,7 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans"
   },
   container: {
-    marginBottom: 50,
+    //marginBottom: 50,
     flex: 1,
     backgroundColor: '#ffffff',
 

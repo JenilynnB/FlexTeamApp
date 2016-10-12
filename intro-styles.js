@@ -14,17 +14,30 @@ module.exports = StyleSheet.create({
 		backgroundColor: "#355376",
 		flex: 1,
 	},
-	heading: {
+	contentContainer: {
+		flex: 1,
+	},
+	headingView: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		padding: 5,	
+	},
+	headingText: {
 		fontSize: 30,
 		color: "#fff",
 		margin: 7,
 		fontFamily: 'OpenSans',
 	},
 	formContainer: {
-		flex: 1,
+		flex: 3,
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: 'center',
+	},
+	bottomContentContainer: {
+		flex: 2,
+		alignItems: 'center',
+		justifyContent: 'flex-start',
 	},
 	textbox: {
 		fontFamily: 'OpenSans',
@@ -72,6 +85,7 @@ module.exports = StyleSheet.create({
 		color: "#fff",
 		fontSize: 16,
 		fontWeight: "bold",
-	}
+	},
+
 
 })

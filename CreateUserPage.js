@@ -42,7 +42,7 @@ export default class CreateUserPage extends React.Component{
 		return (
 				<View style={styles.container}>
 					<View style={styles.formContainer}>
-						<Text style={styles.heading}>Join the Team</Text>
+						<Text style={styles.headingText}>Join the Team</Text>
 						<View><TextInput  
 							placeholder="Your Email"
 							keyboardType="email-address"
@@ -59,6 +59,8 @@ export default class CreateUserPage extends React.Component{
 							>
 								<Text style={styles.buttonText}>NEXT</Text>
 						</TouchableHighlight>
+					</View>
+					<View style={styles.bottomContentContainer}>
 					</View>
 					<View style={styles.footer}>
 						<TouchableHighlight onPress={this.navigateToLoginPage.bind(this)}>
