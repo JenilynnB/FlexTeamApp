@@ -4,18 +4,21 @@ import {
   Text,
   View,
   TouchableHighlight,
+  TouchableOpacity,
   ListView,
 } from 'react-native'
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import PubNub from 'pubnub';
 import { Icon } from 'react-native-elements'
+	
 
 var username = 'Saujin';
 const channel = 'list';
 
 const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
 const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
-
 const listSections = ['NOW', 'LATER', 'PROJECTS'];
+const sectionPrefix = 'ID';
 
 const pubnub = new PubNub({                         
   publishKey   : publish_key,
@@ -23,6 +26,17 @@ const pubnub = new PubNub({
   ssl: true,
   uuid: username
 });
+
+		
+var newArray = {}
+newArray["ID0"] = "NOW";
+newArray["ID1"] = "LATER";
+newArray["ID2"] = "PROJECTS";
+newArray["ID0:row45"] = "This is a thing";
+newArray["ID1:row55"] = "Another thing";
+newArray["ID2:row66"] = "Third thing";
+var sectionIDs = ["ID0", "ID1", "ID2"];
+var rowIDs = [['45'],['55'],['66']]
 
 export default class MyList extends React.Component{
 	
@@ -37,19 +51,10 @@ export default class MyList extends React.Component{
 	      	sectionHeaderHasChanged : (s1, s2) => s1 !== s2,
 	      });
 		
-		
-		var newArray = {}
-		newArray["ID0"] = "NOW";
-		newArray["ID1"] = "LATER";
-		newArray["ID2"] = "PROJECTS";
-		newArray["ID0:row45"] = "This is a thing";
-		newArray["ID1:row55"] = "Another thing";
-		newArray["ID2:row66"] = "Third thing";
-		var sectionIDs = ["ID0", "ID1", "ID2"];
-		var rowIDs = [['45'],['55'],['66']]
-		
 		this.state = {
-	    dataSource: ds.cloneWithRowsAndSections(newArray, sectionIDs, rowIDs)
+			data: newArray,
+	    dataSource: ds.cloneWithRowsAndSections(newArray, sectionIDs, rowIDs),
+	    sectionOpen: [true, true, true, true],
 	  }
 	}
 
@@ -81,20 +86,9 @@ export default class MyList extends React.Component{
 	      		console.log(response);
 	      		//this.success(response.messages),
 	      	}
-	      	/*
-	      	callback: (status, response) => {
-	      		console.log("callback");
-	      		console.log(status);
-	      		console.log(response);
-	      		//this.success(response.messages),
-	      	}*/
+	      	
 	    	}
-	    	/*
-	    	function (status, response) {
-	      	this.state = this.success(response.messages);
-	      	this.setState(this.success(response.messages));
-	    	}
-	    	*/
+	    	
 	    );
 	}
 
@@ -102,30 +96,23 @@ export default class MyList extends React.Component{
 	success(m){
 		console.log("success");
 		
-		var ds = this.state.dataSource;
-		var dataBlob = ds._dataBlob;
-		var sectionIDs = ds.sectionIdentities;
-		var rowIDs = ds.rowIdentities;
-		
-		/*
-		var dataBlob = {},
-			sectionIDs = [],
-			rowIDs = [[],[],[]],
-			item;
-		*/
-
 		/* The list sectionsIDs and rowIDs have to be the same length arrays (not associative) arrays either.
 		 * The datablob holds the key-value pairs for the section header values. React
 		 * Native is very stupid and hacky with sectioned lists right now.
 		*/
 
+		var ds = this.state.dataSource;
+		var dataBlob = ds._dataBlob;
+		var sectionIDs = ds.sectionIdentities;
+		var rowIDs = ds.rowIdentities;
+		
 		//List sections are pre-assigned, as we know all the headers and empty sections will be displayed.
 		for (var i = 0 ; i < listSections.length; i++){
-			if (sectionIDs["ID"+i] === null){
-				sectionIDs.push("ID"+i);
+			if (sectionIDs[sectionPrefix+i] === null){
+				sectionIDs.push(sectionPrefix+i);
 			}
-			if (dataBlob["ID"+i] === null){
-				dataBlob["ID"+i] = listSections[i];
+			if (dataBlob[sectionPrefix+i] === null){
+				dataBlob[sectionPrefix+i] = listSections[i];
 			}
 		}
 
@@ -143,8 +130,8 @@ export default class MyList extends React.Component{
 				rowIDs[item.list].push(item._id);
 			}
 
-			if (dataBlob["ID"+item.list+":row"+item._id] === undefined){
-				dataBlob["ID"+item.list+":row"+item._id] = item.text;
+			if (dataBlob[sectionPrefix+item.list+":row"+item._id] === undefined){
+				dataBlob[sectionPrefix+item.list+":row"+item._id] = item.text;
 			}
 		}
 
@@ -156,26 +143,93 @@ export default class MyList extends React.Component{
 		
 	}
 
-	_renderRow(rowData){
-		return(
-			<TouchableHighlight >
-				<View style={styles.rowContainer}	>
-					<Text style={styles.rowText}>{rowData}</Text>
-					<View style={styles.chevronContainer}>
-						<Icon
-		          style={styles.chevron}
-		          size={28}
-		          name={'chevron-right'}
-		          color={'#66A1E6'} />
-		      </View>
-	      </View>
-			</TouchableHighlight>
-		);
+	toggleSectionOpen(sectionID){
+		var sectionIndex = sectionID.substring(sectionPrefix.length);
+		this.state.sectionOpen[sectionIndex] = !(this.state.sectionOpen[sectionIndex]);
+		console.log("here");
+
+		var ds = this.state.dataSource;
+		var dataBlob = ds._dataBlob;
+		var sectionIDs = ds.sectionIdentities;
+		var rowIDs = ds.rowIdentities;
+
+		this.setState({
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
+      
+  	});
 	}
 
-	_renderSectionHeader(headerData){
+	deleteRow(sectionID, rowID) {
+		/*
+		rowMap[`${secId}${rowId}`].closeRow();
+		const newData = [...this.state.listViewData];
+		newData.splice(rowId, 1);
+		this.setState({listViewData: newData});
+		*/
+	}
+
+	_renderRow(rowData, sectionID, rowID){
+		var sectionIndex = sectionID.substring(sectionPrefix.length);
+		
+		console.log("row");
+		console.log(this.state.sectionOpen[sectionIndex]);
+
+		if (this.state.sectionOpen[sectionIndex]){
+			return(
+
+				<SwipeRow
+            disableRightSwipe={true}
+            disableLeftSwipe={false}
+            leftOpenValue={20 + parseInt(rowID) * 5}
+            rightOpenValue={-150}
+        >
+        	<View style={styles.rowBack}>
+						
+						<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.deleteRow(sectionID, rowID) }>
+							<Icon
+								type = 'font-awesome'
+								name = 'trash-o'
+								color = '#fff'
+								size = {18}
+							/>
+						</TouchableOpacity>
+						<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]}>
+							<Icon
+								type = 'font-awesome'
+								name = 'check'
+								color = '#fff'
+								size = {18}
+								iconStyle = {{fontWeight:'100'}}
+							/>
+						</TouchableOpacity>
+					</View>
+
+					<TouchableHighlight >
+						<View style={styles.rowContainer}	>
+							<Text style={styles.rowText}>{rowData}</Text>
+							<View style={styles.chevronContainer}>
+								<Icon
+				          style={styles.chevron}
+				          size={28}
+				          name={'chevron-right'}
+				          color={'#66A1E6'} />
+				      </View>
+			      </View>
+					</TouchableHighlight>
+				</SwipeRow>
+			);
+		}else{
+			return null;
+		}
+	}
+
+	_renderSectionHeader(headerData, sectionID){
 		return(
-			<Text style={styles.header}>{headerData}</Text>
+			<TouchableOpacity
+				onPress={()=>this.toggleSectionOpen(sectionID)}
+				>
+				<Text style={styles.header}>{headerData}</Text>
+			</TouchableOpacity>
 		);
 	}
 
@@ -184,7 +238,7 @@ export default class MyList extends React.Component{
 		//console.log(this.state.dataSource);
 		return(
 			<View style={styles.container}>
-				<ListView
+				<SwipeListView
 					dataSource = {this.state.dataSource}
 					renderRow = {this._renderRow.bind(this)}
 					renderSectionHeader = {this._renderSectionHeader.bind(this)}
@@ -240,6 +294,37 @@ var styles = StyleSheet.create ({
 
   },
   chevron: {
-  }
+  },
+  rowBack: {
+		alignItems: 'center',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+		marginLeft: 4,
+		marginRight: 4,
+		borderRadius: 5,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: '#7F7F7F',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: '#66A1E6',
+		right: 0,
+		borderTopRightRadius: 5,
+		borderBottomRightRadius: 5,
+	},
+	icon: {
+		color: "#fff",
+	},
 
 })
