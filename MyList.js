@@ -13,7 +13,7 @@ import { Icon } from 'react-native-elements'
 	
 
 var username = 'Saujin';
-const channel = 'list';
+const channel = 'list3';
 
 const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
 const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
@@ -27,7 +27,9 @@ const pubnub = new PubNub({
   uuid: username
 });
 
-		
+
+const sampleData = require('./sample-list-data.js')
+/*		
 var newArray = {}
 newArray["ID0"] = "NOW";
 newArray["ID1"] = "LATER";
@@ -37,6 +39,7 @@ newArray["ID1:row55"] = "Another thing";
 newArray["ID2:row66"] = "Third thing";
 var sectionIDs = ["ID0", "ID1", "ID2"];
 var rowIDs = [['45'],['55'],['66']]
+*/
 
 export default class MyList extends React.Component{
 	
@@ -50,18 +53,24 @@ export default class MyList extends React.Component{
 	      	rowHasChanged: (row1, row2) => row1 !== row2,
 	      	sectionHeaderHasChanged : (s1, s2) => s1 !== s2,
 	      });
-		
+		var dataBlob = {}, rowIDs = [], sectionIDs = [];
+
 		this.state = {
-			data: newArray,
-	    dataSource: ds.cloneWithRowsAndSections(newArray, sectionIDs, rowIDs),
+			rowIDs: rowIDs,
+			sectionIDs: sectionIDs,
+			dataBlob: dataBlob,
+	    dataSource: ds.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
 	    sectionOpen: [true, true, true, true],
 	  }
 	}
 
 
+
 	componentWillMount() {
 
 		this.connect();
+		
+		//this.formatTableData(sampleData);
 
 	  pubnub.addListener({
       message: (m) => this.success([m.message])
@@ -75,21 +84,16 @@ export default class MyList extends React.Component{
 
 	connect() { 
 	    console.log("connect");
-	    
+	    var self = this;
 	    pubnub.history(
-	    	{
-	      	channel: 'list',
-	      	count: 50,
-	      	callback: (response) => {
-	      		console.log("callback");
-	      		//console.log(status);
-	      		console.log(response);
-	      		//this.success(response.messages),
-	      	}
-	      	
-	    	}
-	    	
-	    );
+		  	{
+		      channel: channel,
+		      count: 50
+		  	},
+		    function (status, response) {
+		        self.success(response.messages);
+		    }
+			);
 	}
 
 	//Pubnub success callback
@@ -101,6 +105,19 @@ export default class MyList extends React.Component{
 		 * Native is very stupid and hacky with sectioned lists right now.
 		*/
 
+		this.formatTableData(m)
+
+		this.setState({
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(this.state.dataBlob, this.state.sectionIDs, this.state.rowIDs),
+      
+  	});
+  	
+	}
+
+
+	// Takes data to be formatted in a table with rows and sections, formats it and holds it in state
+	formatTableData(data){
+		
 		var ds = this.state.dataSource;
 		var dataBlob = ds._dataBlob;
 		var sectionIDs = ds.sectionIdentities;
@@ -108,17 +125,24 @@ export default class MyList extends React.Component{
 		
 		//List sections are pre-assigned, as we know all the headers and empty sections will be displayed.
 		for (var i = 0 ; i < listSections.length; i++){
-			if (sectionIDs[sectionPrefix+i] === null){
+			if (sectionIDs[sectionPrefix+i] === undefined){
 				sectionIDs.push(sectionPrefix+i);
+				
+				rowIDs[i] = [];
 			}
-			if (dataBlob[sectionPrefix+i] === null){
+			if (dataBlob[sectionPrefix+i] === undefined){
 				dataBlob[sectionPrefix+i] = listSections[i];
 			}
 		}
 
-		for (var i = 0; i<m.length; i++) {
-			var item = m[i];
+		for (var i = 0; i<data.length; i++) {
+			var item = data[i];
 			
+			//Items from history are formatted slightly differently than items added immediately
+			if (item.entry != undefined) {
+				item = item.entry;
+			}
+
 			var itemExists = false;
 			for (id in rowIDs){
 				if (item._id == id) {
@@ -127,6 +151,7 @@ export default class MyList extends React.Component{
 			}
 
 			if (!itemExists){
+
 				rowIDs[item.list].push(item._id);
 			}
 
@@ -134,22 +159,20 @@ export default class MyList extends React.Component{
 				dataBlob[sectionPrefix+item.list+":row"+item._id] = item.text;
 			}
 		}
-
 		this.setState({
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
-      
-  	});
-  	
-		
+			rowIDs: rowIDs,
+			sectionIDs: sectionIDs,
+			dataBlob: dataBlob,
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(this.state.dataBlob, this.state.sectionIDs, this.state.rowIDs),
+		});
 	}
 
 	toggleSectionOpen(sectionID){
 		var sectionIndex = sectionID.substring(sectionPrefix.length);
 		this.state.sectionOpen[sectionIndex] = !(this.state.sectionOpen[sectionIndex]);
-		console.log("here");
 
 		var ds = this.state.dataSource;
-		var dataBlob = ds._dataBlob;
+		var dataBlob = Object.assign({}, this.state.dataBlob);
 		var sectionIDs = ds.sectionIdentities;
 		var rowIDs = ds.rowIdentities;
 
@@ -159,20 +182,39 @@ export default class MyList extends React.Component{
   	});
 	}
 
-	deleteRow(sectionID, rowID) {
-		/*
-		rowMap[`${secId}${rowId}`].closeRow();
-		const newData = [...this.state.listViewData];
-		newData.splice(rowId, 1);
-		this.setState({listViewData: newData});
-		*/
-	}
+	deleteRow(sectionID, rowID, rowMap) {
+		
+		rowMap[`${sectionID}${rowID}`].closeRow();
 
-	_renderRow(rowData, sectionID, rowID){
+		var ds = this.state.dataSource;
+		/*It is necessary to make a full new copy of the dataBlob object so that the table will 
+		  update when the datasource in the state is updated*/
+		var dataBlob = Object.assign({}, this.state.dataBlob);
+		var rowIDs = this.state.rowIDs;
+		var sectionIDs = this.state.sectionIDs;
 		var sectionIndex = sectionID.substring(sectionPrefix.length);
 		
-		console.log("row");
-		console.log(this.state.sectionOpen[sectionIndex]);
+		//Finds the rowID in the 2D array of row IDs and removes it
+		var rowIndex = rowIDs[sectionIndex].indexOf(rowID);
+		rowIDs[sectionIndex].splice(rowIndex, 1);
+		
+		//Removes item from main datablob list
+		delete dataBlob[sectionID+":row"+rowID];
+
+		//sets the state with new data
+		this.setState({
+			data: dataBlob,
+			rowIDs: rowIDs,
+			sectionIDs: sectionIDs,
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
+      
+  	});
+
+  	
+	}
+
+	_renderRow(rowData, sectionID, rowID, rowMap){
+		var sectionIndex = sectionID.substring(sectionPrefix.length);
 
 		if (this.state.sectionOpen[sectionIndex]){
 			return(
@@ -185,7 +227,7 @@ export default class MyList extends React.Component{
         >
         	<View style={styles.rowBack}>
 						
-						<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.deleteRow(sectionID, rowID) }>
+						<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.deleteRow(sectionID, rowID, rowMap) }>
 							<Icon
 								type = 'font-awesome'
 								name = 'trash-o'
