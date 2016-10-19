@@ -23,6 +23,18 @@ export default class TabBar extends React.Component {
 
   }
 
+  navigateToAddToList(){
+    console.log("navigat to add to list");
+    var navigator = this.props.navigator;
+    navigator.push({id: 'AddToList'});
+    /*
+    navigator.replace({
+        id: 'AddToList',
+        name: 'AddToList',
+      });
+      */
+  }
+
   changeTab (selectedTab) {
     this.setState({selectedTab})
   }
@@ -61,11 +73,10 @@ export default class TabBar extends React.Component {
           renderIcon={() => (<Image source={require('./icons/add.png')} />) }
           renderSelectedIcon={() => <Image source={require('./icons/add.png')} />}
           tabStyle={styles.addButton}
-          onPress={() => this.changeTab('add')}
+          onPress={() => this.navigateToAddToList() }
           selected={this.state.selectedTab==='add'}
           >
-          <View>
-          </View>
+          
         </Tab>
 
         <Tab 

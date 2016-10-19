@@ -10,14 +10,15 @@ import {
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import PubNub from 'pubnub';
 import { Icon } from 'react-native-elements'
-	
 
 var username = 'Saujin';
-const channel = 'list3';
+const channel = 'list5';
+const user = {"_id": "4","name": "Saujin"}
 
 const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
 const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
-const listSections = ['NOW', 'LATER', 'PROJECTS'];
+const listSections = ['NOW', 'LATER', 'PROJECTS', 'COMPLETE'];
+const completeSectionID = 3;
 const sectionPrefix = 'ID';
 
 const pubnub = new PubNub({                         
@@ -28,57 +29,35 @@ const pubnub = new PubNub({
 });
 
 
-const sampleData = require('./sample-list-data.js')
-/*		
-var newArray = {}
-newArray["ID0"] = "NOW";
-newArray["ID1"] = "LATER";
-newArray["ID2"] = "PROJECTS";
-newArray["ID0:row45"] = "This is a thing";
-newArray["ID1:row55"] = "Another thing";
-newArray["ID2:row66"] = "Third thing";
-var sectionIDs = ["ID0", "ID1", "ID2"];
-var rowIDs = [['45'],['55'],['66']]
-*/
-
 export default class MyList extends React.Component{
 	
-
 	constructor(){
 		super();
 
 		var ds = new ListView.DataSource({
-	      	getSectionHeaderData: (dataBlob, sectionID) => dataBlob[sectionID],
-	      	getRowData: (dataBlob, sectionID, rowID) => dataBlob[sectionID + ':row' + rowID],
 	      	rowHasChanged: (row1, row2) => row1 !== row2,
 	      	sectionHeaderHasChanged : (s1, s2) => s1 !== s2,
 	      });
-		var dataBlob = {}, rowIDs = [], sectionIDs = [];
 
 		this.state = {
-			rowIDs: rowIDs,
-			sectionIDs: sectionIDs,
-			dataBlob: dataBlob,
-	    dataSource: ds.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
-	    sectionOpen: [true, true, true, true],
+			data: [],
+			dataSource: ds.cloneWithRowsAndSections([]),
 	  }
 	}
-
 
 
 	componentWillMount() {
 
 		this.connect();
-		
-		//this.formatTableData(sampleData);
-
 	  pubnub.addListener({
       message: (m) => this.success([m.message])
     });
 	    
     pubnub.subscribe({
       channels: [channel],
-    });    
+    });   
+
+    pubnub.setFilterExpression("user != " + pubnub.uuid); 
 	}
 
 
@@ -99,124 +78,137 @@ export default class MyList extends React.Component{
 	//Pubnub success callback
 	success(m){
 		console.log("success");
-		
-		/* The list sectionsIDs and rowIDs have to be the same length arrays (not associative) arrays either.
-		 * The datablob holds the key-value pairs for the section header values. React
-		 * Native is very stupid and hacky with sectioned lists right now.
-		*/
 
-		this.formatTableData(m)
+		var data = this.convertListDatatoMap(m);
+		console.log(data);
 
 		this.setState({
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(this.state.dataBlob, this.state.sectionIDs, this.state.rowIDs),
+			data: data,
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(data),
       
   	});
   	
 	}
 
+	convertListDatatoMap(data){
 
-	// Takes data to be formatted in a table with rows and sections, formats it and holds it in state
-	formatTableData(data){
-		
-		var ds = this.state.dataSource;
-		var dataBlob = ds._dataBlob;
-		var sectionIDs = ds.sectionIdentities;
-		var rowIDs = ds.rowIdentities;
-		
-		//List sections are pre-assigned, as we know all the headers and empty sections will be displayed.
-		for (var i = 0 ; i < listSections.length; i++){
-			if (sectionIDs[sectionPrefix+i] === undefined){
-				sectionIDs.push(sectionPrefix+i);
-				
-				rowIDs[i] = [];
-			}
-			if (dataBlob[sectionPrefix+i] === undefined){
-				dataBlob[sectionPrefix+i] = listSections[i];
-			}
-		}
+		var listSectionsMap = {};  // Create the blank map
 
 		for (var i = 0; i<data.length; i++) {
 			var item = data[i];
 			
-			//Items from history are formatted slightly differently than items added immediately
-			if (item.entry != undefined) {
-				item = item.entry;
-			}
-
-			var itemExists = false;
-			for (id in rowIDs){
-				if (item._id == id) {
-					itemExists = true;
-				}
-			}
-
-			if (!itemExists){
-
-				rowIDs[item.list].push(item._id);
-			}
-
-			if (dataBlob[sectionPrefix+item.list+":row"+item._id] === undefined){
-				dataBlob[sectionPrefix+item.list+":row"+item._id] = item.text;
-			}
+			var newListSectionsMap = this.addItemToListMap(item, listSectionsMap);
 		}
-		this.setState({
-			rowIDs: rowIDs,
-			sectionIDs: sectionIDs,
-			dataBlob: dataBlob,
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(this.state.dataBlob, this.state.sectionIDs, this.state.rowIDs),
-		});
+		return newListSectionsMap;
 	}
 
-	toggleSectionOpen(sectionID){
-		var sectionIndex = sectionID.substring(sectionPrefix.length);
-		this.state.sectionOpen[sectionIndex] = !(this.state.sectionOpen[sectionIndex]);
+	addItemToListMap(item, listSectionsMap){
+		
+		console.log("adding to map");
+		//Items from history are formatted slightly differently, this extracts them
+		if (item.entry != undefined) {
+			item = item.entry;
+		}
 
-		var ds = this.state.dataSource;
-		var dataBlob = Object.assign({}, this.state.dataBlob);
-		var sectionIDs = ds.sectionIdentities;
-		var rowIDs = ds.rowIdentities;
+		if(item.deleted != true){
+			var sectionName = listSections[item.list];
+			if (!listSectionsMap[sectionName]){
+				listSectionsMap[sectionName] = [];
+			}
 
-		this.setState({
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
-      
-  	});
+			listSectionsMap[sectionName].push(item);
+			console.log(listSectionsMap[sectionName]);
+			console.log(listSectionsMap[sectionName].length);
+		}
+
+
+		return listSectionsMap
 	}
+	
 
 	deleteRow(sectionID, rowID, rowMap) {
 		
+		console.log('deleting row');
+		var data = Object.assign({}, this.state.data);
+		var item = data[sectionID][rowID];
+
+		item.deleted = true;
+
 		rowMap[`${sectionID}${rowID}`].closeRow();
-
-		var ds = this.state.dataSource;
-		/*It is necessary to make a full new copy of the dataBlob object so that the table will 
-		  update when the datasource in the state is updated*/
-		var dataBlob = Object.assign({}, this.state.dataBlob);
-		var rowIDs = this.state.rowIDs;
-		var sectionIDs = this.state.sectionIDs;
-		var sectionIndex = sectionID.substring(sectionPrefix.length);
 		
-		//Finds the rowID in the 2D array of row IDs and removes it
-		var rowIndex = rowIDs[sectionIndex].indexOf(rowID);
-		rowIDs[sectionIndex].splice(rowIndex, 1);
-		
-		//Removes item from main datablob list
-		delete dataBlob[sectionID+":row"+rowID];
+		data[sectionID].splice(rowID, 1);
 
-		//sets the state with new data
+		console.log(data[sectionID]);
+		console.log(data[sectionID].length);
+		if (data[sectionID].length == 0 ){
+			console.log("deleting section");
+			delete data[sectionID];
+		}
+
+
 		this.setState({
-			data: dataBlob,
-			rowIDs: rowIDs,
-			sectionIDs: sectionIDs,
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
+			data: data,
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(data),
       
   	});
 
-  	
+		pubnub.publish({
+			message: item,
+			channel: channel,
+			meta: {userDevice: pubnub.uuid}
+		},
+		function(status, response){
+			if (status.error) {
+        // handle error
+        console.log(status)
+      } else {
+        console.log("message Published w/ timetoken", response.timetoken)
+      }
+		});
+
 	}
 
-	_renderRow(rowData, sectionID, rowID, rowMap){
-		var sectionIndex = sectionID.substring(sectionPrefix.length);
 
-		if (this.state.sectionOpen[sectionIndex]){
+	markRowComplete(sectionID, rowID, rowMap){
+		
+		console.log("marking complete");
+		var data = Object.assign({}, this.state.data);
+		var item = data[sectionID][rowID];
+		var newItem = Object.assign({}, item);
+
+		
+		this.deleteRow(sectionID, rowID, rowMap);
+
+		newItem.list = completeSectionID;
+		var newList = this.addItemToListMap(newItem, data);
+
+		this.setState({
+			data: newList,
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(newList),
+      
+  	});
+
+		pubnub.publish({
+			message: newItem,
+			channel: channel,
+			meta: {userDevice: pubnub.uuid}
+		},
+		function(status, response){
+			if (status.error) {
+        // handle error
+        console.log(status)
+      } else {
+        console.log("message Published w/ timetoken", response.timetoken)
+      }
+		});
+
+	}
+
+
+	_renderRow(rowData, sectionID, rowID, rowMap){
+			//var sectionIndex = sectionID.substring(sectionPrefix.length);
+			console.log("rendering row");
+
 			return(
 
 				<SwipeRow
@@ -235,7 +227,7 @@ export default class MyList extends React.Component{
 								size = {18}
 							/>
 						</TouchableOpacity>
-						<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]}>
+						<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress= { _ => this.markRowComplete(sectionID, rowID, rowMap)} >
 							<Icon
 								type = 'font-awesome'
 								name = 'check'
@@ -248,7 +240,7 @@ export default class MyList extends React.Component{
 
 					<TouchableHighlight >
 						<View style={styles.rowContainer}	>
-							<Text style={styles.rowText}>{rowData}</Text>
+							<Text style={styles.rowText}>{rowData.text}</Text>
 							<View style={styles.chevronContainer}>
 								<Icon
 				          style={styles.chevron}
@@ -260,24 +252,23 @@ export default class MyList extends React.Component{
 					</TouchableHighlight>
 				</SwipeRow>
 			);
-		}else{
-			return null;
-		}
+
 	}
 
-	_renderSectionHeader(headerData, sectionID){
+	_renderSectionHeader(headerData, sectionIndex){
+		console.log(headerData);
+		console.log(sectionIndex);
 		return(
 			<TouchableOpacity
-				onPress={()=>this.toggleSectionOpen(sectionID)}
+				onPress={()=>this.toggleSectionOpen(sectionIndex)}
 				>
-				<Text style={styles.header}>{headerData}</Text>
+				<Text style={styles.header}>{sectionIndex}</Text>
 			</TouchableOpacity>
 		);
 	}
 
 	render(){
-		//console.log("data source");
-		//console.log(this.state.dataSource);
+
 		return(
 			<View style={styles.container}>
 				<SwipeListView

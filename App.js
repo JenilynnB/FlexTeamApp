@@ -20,6 +20,8 @@ import LoginPage from './LoginPage.js'
 import CreateUserPage from './CreateUserPage.js'
 import CreateProfilePage from './CreateProfilePage.js'
 import Chat from './Chat.js'
+import AddToList from './AddToList.js'
+import TopNavBar from './TopNavBar.js'
 
 export default class App extends React.Component {
   
@@ -49,7 +51,7 @@ export default class App extends React.Component {
             if (route.sceneConfig) {
               return route.sceneConfig;
             }
-            return Navigator.SceneConfigs.FloatFromRight;
+            return Navigator.SceneConfigs.VerticalUpSwipeJump;
           }} />
       </View>
     )
@@ -80,6 +82,15 @@ export default class App extends React.Component {
     } if (routeID === 'Chat') { 
       return (
         <Chat />
+        )
+    } if (routeID === 'AddToList') {
+      return (
+        <TopNavBar 
+            scene='addToList' 
+            configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromBottom}
+            navigator = {navigator}
+            />
+
         )
     }
   }

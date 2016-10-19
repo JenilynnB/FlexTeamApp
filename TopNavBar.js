@@ -11,6 +11,7 @@ import MyList from './MyList.js'
 import SideMenu from 'react-native-side-menu';
 import Menu from './Menu.js';
 import Chat from './Chat.js';
+import AddToList from './AddToList.js';	
 
 export default class TopNavBar extends React.Component{
 	constructor(props) {
@@ -26,6 +27,12 @@ export default class TopNavBar extends React.Component{
     this.setState({
       menuIsOpen: !this.state.menuIsOpen,
     });
+  }
+
+  cancelPressed(){
+  	console.log("cancel pressed");
+  	var navigator = this.props.navigator;
+  	navigator.pop();
   }
 
   updateMenuState(menuIsOpen) {
@@ -48,7 +55,22 @@ export default class TopNavBar extends React.Component{
 	  	return(
 	  		<MyList />
 	  	);
+	  }else if(this.props.scene === 'addToList'){
+	  	return(
+	  		<AddToList />
+	  	);
 	  }
+  }
+  renderLeftButton(route, navigator, index, navState){
+  	if (this.props.scene === 'addToList'){
+			return(
+				<TouchableHighlight style={styles.navBarButton} onPress={this.cancelPressed.bind(this)}>
+			      <Text style={styles.navBarBtnText}>Cancel</Text>
+			  </TouchableHighlight>
+			 );
+  	}else{
+  		return;
+  	}
   }
 
   renderTitle(route, navigator, index, navState){
@@ -63,6 +85,10 @@ export default class TopNavBar extends React.Component{
 			return (
 				<Text style={styles.navBarTitleText}>My List</Text>
 			);
+		}else if(this.props.scene === 'addToList'){
+			return(
+				<Text style={styles.navBarTitleText}>Add to List</Text>
+			);
 		}
   }
 
@@ -73,15 +99,14 @@ export default class TopNavBar extends React.Component{
 		    isOpen={this.state.menuIsOpen}
 		    menuPosition='right'
 		    onChange={(isOpen) => this.updateMenuState(isOpen)}
-		    >
+		>
 		  <View style={styles.container}>
 		    <Navigator 
 		      renderScene={this.renderScene.bind(this)}
 		      navigationBar={
 		        <Navigator.NavigationBar
 		          routeMapper={{
-		            LeftButton: (route, navigator, index, navState) =>
-		              {  },
+		            LeftButton: this.renderLeftButton.bind(this),
 		            RightButton: (route, navigator, index, navState) =>
 		              { return (
 		                <TouchableHighlight style={styles.navBarButton} onPress={() => this.toggleMenu()}>
@@ -108,7 +133,7 @@ const styles = StyleSheet.create({
   },
   navBarButton: {
     height: 40,
-      width: 40,
+     width: 60,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -121,9 +146,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "OpenSans"
   },
-    container: {
-    //marginBottom: 50,
-    flex: 1,
-    backgroundColor: '#ffffff',
+  navBarBtnText: {
+  	color: "#fff",
+  },
+  container: {
+  
+  flex: 1,
+  backgroundColor: '#ffffff',
   }
 });
