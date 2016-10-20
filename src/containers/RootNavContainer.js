@@ -1,10 +1,3 @@
-/**
-npm components to install
-react-native
-react-validation
-*/
-
-
 import React from 'react'
 import {
   StyleSheet,
@@ -23,18 +16,36 @@ import Chat from './Chat.js'
 import AddToList from './AddToList.js'
 import TopNavBar from './TopNavBar.js'
 
+import { connect } from 'react-redux';
+import { setCurrentUserID, addMessage } from '../actions';
+
 export default class App extends React.Component {
   
-  state = {
-    userIsLoggedIn: false,
-    user: null,
-
-  }
+  static propTypes = {
+        //history: React.PropTypes.array,
+        userID: React.PropTypes.number,
+        //addMessage: React.PropTypes.func,
+        setUserID: React.PropTypes.func,
+    };
 
   componentWillMount() {
       //TODO: see if the user is logged in
       //If the user is logged in, set the user state in the app  
   }
+  /*
+  mapDispatchToProps(dispatch) {
+    return {
+        //addMessage: (message) => dispatch(addMessage(message)),
+        setUserID: (userID) => dispatch(setCurrentUserID(userID)),
+    };
+  }
+  mapStateToProps(state) {
+    return {
+        //history: state.app.get('messages').toJS(),
+        userID: state.app.get('userID'),
+    };
+  }
+  */
 
   render(){
 
@@ -45,7 +56,7 @@ export default class App extends React.Component {
         barStyle="light-content"
       />
       <Navigator
-        initialRoute ={{id: 'TabBar', name: 'TabBar'}}
+        initialRoute ={{id: 'LoginPage', name: 'LoginPage'}}
         renderScene={this.renderScene.bind(this)}
         configureScene={(route) => {
             if (route.sceneConfig) {
@@ -95,6 +106,8 @@ export default class App extends React.Component {
     }
   }
 }
+
+
 
 var styles = StyleSheet.create({
   container: {

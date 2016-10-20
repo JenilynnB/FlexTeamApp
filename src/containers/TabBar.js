@@ -45,8 +45,8 @@ export default class TabBar extends React.Component {
       <Tabs tabBarStyle={styles.tabBar}>
         <Tab 
           title="FLEX CHAT"
-          renderIcon={() => (<Image source={require('./icons/chat.png')} />) }
-          renderSelectedIcon={() => <Image source={require('./icons/chat.png')} />}
+          renderIcon={() => (<Image source={require('../icons/chat.png')} />) }
+          renderSelectedIcon={() => <Image source={require('../icons/chat.png')} />}
           titleStyle={styles.tabTitle}
           selectedTitleStyle={styles.selectedTabTitle}
           tabStyle={styles.tab}
@@ -57,8 +57,8 @@ export default class TabBar extends React.Component {
         </Tab>
 
         <Tab
-          renderIcon={() => (<Image source={require('./icons/list.png')} />) }
-          renderSelectedIcon={() => <Image source={require('./icons/list.png')} />}
+          renderIcon={() => (<Image source={require('../icons/list.png')} />) }
+          renderSelectedIcon={() => <Image source={require('../icons/list.png')} />}
           title="MY LIST"
           titleStyle={styles.tabTitle}
           tabStyle={styles.tab}
@@ -70,8 +70,8 @@ export default class TabBar extends React.Component {
 
 
         <Tab
-          renderIcon={() => (<Image source={require('./icons/add.png')} />) }
-          renderSelectedIcon={() => <Image source={require('./icons/add.png')} />}
+          renderIcon={() => (<Image source={require('../icons/add.png')} />) }
+          renderSelectedIcon={() => <Image source={require('../icons/add.png')} />}
           tabStyle={styles.addButton}
           onPress={() => this.navigateToAddToList() }
           selected={this.state.selectedTab==='add'}
@@ -80,8 +80,8 @@ export default class TabBar extends React.Component {
         </Tab>
 
         <Tab 
-          renderIcon={() => (<Image source={require('./icons/projects.png')} />) }
-          renderSelectedIcon={() => <Image source={require('./icons/projects.png')} />}
+          renderIcon={() => (<Image source={require('../icons/projects.png')} />) }
+          renderSelectedIcon={() => <Image source={require('../icons/projects.png')} />}
           
           title="PROJECTS"
           titleStyle={styles.tabTitle}
@@ -94,8 +94,8 @@ export default class TabBar extends React.Component {
         </Tab>
 
         <Tab 
-          renderIcon={() => (<Image source={require('./icons/search.png')} />) }
-          renderSelectedIcon={() => <Image source={require('./icons/search.png')} />}
+          renderIcon={() => (<Image source={require('../icons/search.png')} />) }
+          renderSelectedIcon={() => <Image source={require('../icons/search.png')} />}
           title="SEARCH"
           titleStyle={styles.tabTitle}
           tabStyle={styles.tab}

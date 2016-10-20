@@ -4,12 +4,13 @@ import {
   Text,
   TextInput,
   View,
-  TouchableHighlight,
+  TouchableOpacity,
   Navigator,
   Image,
   Dimensions
 } from 'react-native'
 import Swiper from 'react-native-swiper'
+import { login } from '../components/Remote.js';
 
 var {height, width} = Dimensions.get('window');
 
@@ -21,19 +22,23 @@ export default class LoginPage extends React.Component{
 	}
 
 	submitForm(){
-
+		console.log("submitting login form");
 		if (this.state.passwordText == ""){
 			//password blank, show error
+			console.log("blank password");
 		}
 		if (this.state.emailText == ""){
 			//email blank, show error
+			console.log("blank email");
 		}
 
 		if (!this.validateEmail(this.state.emailText)) {
 		  // not a valid email
+		  console.log("invalid email address");
 		} else {
   		// valid email
   		//TODO: verify credentials, log user in
+  		var accessToken = login(this.state.emailText, this.state.passwordText);
 		}
 
 		
@@ -41,7 +46,7 @@ export default class LoginPage extends React.Component{
 	}
 
 	validateEmail = (email) => {
-  	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@+"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 	};
 
@@ -60,7 +65,7 @@ export default class LoginPage extends React.Component{
 					<View  style={styles.contentContainer}>
 						<View style={styles.formContainer}>
 							<View style={styles.headingView}>
-								<Image source={require('./images/logo.png')}/>
+								<Image source={require('../images/logo.png')}/>
 								<Text style={styles.headingText}>FlexTeam</Text>
 							</View>
 							<View><TextInput  
@@ -73,15 +78,15 @@ export default class LoginPage extends React.Component{
 								secureTextEntry={true}
 								onChangeText={(text) => this.setState({passwordText: text})}
 								style={styles.textbox}/></View>
-							<TouchableHighlight 
+							<TouchableOpacity 
 								style={styles.button}
 								onPress={this.submitForm.bind(this)}
 								>
 									<Text style={styles.buttonText}>LOGIN</Text>
-							</TouchableHighlight>
-							<TouchableHighlight>
+							</TouchableOpacity>
+							<TouchableOpacity>
 								<Text style={styles.linkText}>I forgot my password</Text>
-							</TouchableHighlight>
+							</TouchableOpacity>
 						</View>
 
 						<View style={styles.bottomContentContainer}>
@@ -93,17 +98,17 @@ export default class LoginPage extends React.Component{
 								activeDot={<View style={{backgroundColor: '#fff', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}
 								>
 					      <View style={carouselStyles.slide1}>
-					        <Image source={require('./images/scoping.png')} style={carouselStyles.image}/>
+					        <Image source={require('../images/scoping.png')} style={carouselStyles.image}/>
 					        <Text style={carouselStyles.heading}>GUIDED SCOPING</Text>
 					        <Text style={carouselStyles.text}>Start with a simple brief chat where we learn your needs and help you scope your project. Then, you just leave everything to us. No need to interview countless freelancers</Text>
 					      </View>
 					      <View style={carouselStyles.slide2}>
-					        <Image source={require('./images/projectmgmt.png')} />
+					        <Image source={require('../images/projectmgmt.png')} />
 					        <Text style={carouselStyles.heading}>PROJECT MANAGEMENT</Text>
 					        <Text style={carouselStyles.text}>Your Project Manager, who will serve as your single point of contact will assemble and oversee our team of experts for you. Your work will get started right away.</Text>
 					      </View>
 					      <View style={carouselStyles.slide3}>
-					      	<Image source={require('./images/satisfaction.png')} />
+					      	<Image source={require('../images/satisfaction.png')} />
 					      	<Text style={carouselStyles.heading}>SATISFACTION GUARANTEED</Text>
 					        <Text style={carouselStyles.text}>Your PM will deliver quality results back to you on time. We are your simplest and most cost-efficient solution in accessing high-caliber talent. If you are not happy, we will make it right.</Text>
 					      </View>
@@ -113,11 +118,11 @@ export default class LoginPage extends React.Component{
 
 
 					<View style={styles.footer}>
-					<TouchableHighlight onPress={this.navigateToCreateAccountPage.bind(this)}>
+					<TouchableOpacity onPress={this.navigateToCreateAccountPage.bind(this)}>
 						<Text style={styles.loginText}>Dont Have an account? 
 							<Text style={styles.loginLink}> Start a project with us.</Text>
 						</Text>
-					</TouchableHighlight>
+					</TouchableOpacity>
 				</View>
 
 				
@@ -164,5 +169,5 @@ var carouselStyles = StyleSheet.create({
   },
 })
 
-var styles = require('./intro-styles.js')
+var styles = require('../styles/intro-styles.js')
 

@@ -50,7 +50,7 @@ module.exports = class Menu extends Component {
         <View style={styles.menuItemContainer}>
           <Image
             style={styles.icon}
-            source={require('./icons/profile.png')}/>
+            source={require('../icons/profile.png')}/>
           <Text 
             onPress={() => this.props.onItemSelected('Profile')}
             style={styles.textLink}>Edit Profile
@@ -59,7 +59,7 @@ module.exports = class Menu extends Component {
         <View style={styles.menuItemContainer}>
           <Image
             style={styles.icon}
-            source={require('./icons/billing.png')}/>
+            source={require('../icons/billing.png')}/>
           <Text 
             onPress={() => this.props.onItemSelected('Billing')}
             style={styles.textLink}>Billing
@@ -68,7 +68,7 @@ module.exports = class Menu extends Component {
         <View style={styles.menuItemContainer}>
           <Image
             style={styles.icon}
-            source={require('./icons/referrals.png')}/>
+            source={require('../icons/referrals.png')}/>
           <Text 
             onPress={() => this.props.onItemSelected('Referrals')}
             style={styles.textLink}>Referrals
@@ -77,7 +77,7 @@ module.exports = class Menu extends Component {
         <View style={styles.menuItemContainer}>
           <Image
             style={styles.icon}
-            source={require('./icons/settings.png')}/>
+            source={require('../icons/settings.png')}/>
           <Text 
             onPress={() => this.props.onItemSelected('Settings')}
             style={styles.textLink}>Settings

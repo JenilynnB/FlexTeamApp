@@ -77,7 +77,7 @@ export default class TopNavBar extends React.Component{
 		if (this.props.scene === "chat"){
 			return (
 		    <View style={styles.navBarTitleView}>
-		      <Image source={require('./icons/logo.png')}/>
+		      <Image source={require('../icons/logo.png')}/>
 		      <Text style={styles.navBarTitleText}> FlexTeam</Text>
 		    </View>
 		   ); 
@@ -110,7 +110,7 @@ export default class TopNavBar extends React.Component{
 		            RightButton: (route, navigator, index, navState) =>
 		              { return (
 		                <TouchableHighlight style={styles.navBarButton} onPress={() => this.toggleMenu()}>
-		                  <Image source={require('./icons/more.png')}/>
+		                  <Image source={require('../icons/more.png')}/>
 		                </TouchableHighlight>
 		                ); },
 		            Title: this.renderTitle.bind(this),

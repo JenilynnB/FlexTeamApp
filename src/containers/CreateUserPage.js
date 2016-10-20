@@ -76,4 +76,4 @@ export default class CreateUserPage extends React.Component{
 
 }
 
-var styles = require('./intro-styles.js')
+var styles = require('../styles/intro-styles.js')

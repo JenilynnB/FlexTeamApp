@@ -15,8 +15,8 @@ import PubNub from 'pubnub';
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';
 import CustomView from './CustomView';
-import BotBubble from './BotBubble.js';
-import botMessages from './data/bot-messages.js';
+import BotBubble from '../components/BotBubble.js';
+import botMessages from '../data/bot-messages.js';
 
 
 var username = 'Saujin';
@@ -108,7 +108,7 @@ export default class Chat extends React.Component {
       if (this._isMounted === true) {
         this.setState((previousState) => {
           return {
-            messages: GiftedChat.prepend(previousState.messages, require('./data/old_messages.js')),
+            messages: GiftedChat.prepend(previousState.messages, require('../data/old_messages.js')),
             loadEarlier: false,
             isLoadingEarlier: false,
           };

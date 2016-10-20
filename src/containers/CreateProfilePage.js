@@ -39,7 +39,7 @@ export default class CreateProfilePage extends React.Component{
 				<View style={styles.formContainer}>
 					<TouchableHighlight >
 						<View style={profileStyles.imageContainer}>
-							<Image style={profileStyles.image} source={require('./images/addphoto.png')}/>
+							<Image style={profileStyles.image} source={require('../images/addphoto.png')}/>
 							<Text style={profileStyles.text}>PHOTO</Text>
 						</View>
 					</TouchableHighlight>
@@ -98,5 +98,5 @@ var profileStyles = StyleSheet.create ({
 	}
 })
 
-var styles = require('./intro-styles.js')
+var styles = require('../styles/intro-styles.js')
 
