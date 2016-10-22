@@ -4,7 +4,7 @@ import {
 import React from 'react'
 import { Provider } from 'react-redux'
 
-import RootNav from './containers/RootNavContainer.js';
+import RootNav from './containers/RootNav.js';
 import configureStore from './store/configureStore.js'
 
 

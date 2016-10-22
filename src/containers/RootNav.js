@@ -17,21 +17,9 @@ import AddToList from './AddToList.js'
 import TopNavBar from './TopNavBar.js'
 
 import { connect } from 'react-redux';
-import { setCurrentUserID, addMessage } from '../actions';
+import { setCurrentUserID} from '../actions';
 
-export default class App extends React.Component {
-  
-  static propTypes = {
-        //history: React.PropTypes.array,
-        userID: React.PropTypes.number,
-        //addMessage: React.PropTypes.func,
-        setUserID: React.PropTypes.func,
-    };
 
-  componentWillMount() {
-      //TODO: see if the user is logged in
-      //If the user is logged in, set the user state in the app  
-  }
   /*
   mapDispatchToProps(dispatch) {
     return {
@@ -47,6 +35,21 @@ export default class App extends React.Component {
   }
   */
 
+export default class RootNav extends React.Component {
+  
+  static propTypes = {
+        //history: React.PropTypes.array,
+        userID: React.PropTypes.number,
+        //addMessage: React.PropTypes.func,
+        setUserID: React.PropTypes.func,
+    };
+
+  componentWillMount() {
+      //TODO: see if the user is logged in
+      //If the user is logged in, set the user state in the app  
+  }
+
+
   render(){
 
     return (
@@ -56,7 +59,7 @@ export default class App extends React.Component {
         barStyle="light-content"
       />
       <Navigator
-        initialRoute ={{id: 'LoginPage', name: 'LoginPage'}}
+        initialRoute ={{id: 'TabBar', name: 'LoginPage'}}
         renderScene={this.renderScene.bind(this)}
         configureScene={(route) => {
             if (route.sceneConfig) {

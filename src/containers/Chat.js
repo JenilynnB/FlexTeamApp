@@ -12,7 +12,7 @@ import SideMenu from 'react-native-side-menu'
 import PubNub from 'pubnub';
 
 
-import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
+import {GiftedChat, Actions, Bubble, Avatar, Composer, Send} from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';
 import CustomView from './CustomView';
 import BotBubble from '../components/BotBubble.js';
@@ -50,6 +50,7 @@ export default class Chat extends React.Component {
     this.onReceive = this.onReceive.bind(this);
     this.renderCustomActions = this.renderCustomActions.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
+    this.renderAvatar = this.renderAvatar.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
     this.onBotActionClicked = this.onBotActionClicked.bind(this);
@@ -88,7 +89,6 @@ export default class Chat extends React.Component {
 
   //At the success callback, update the message list
   success(m){
-    
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, m), 
@@ -237,6 +237,18 @@ export default class Chat extends React.Component {
       />
     );
   }
+  renderAvatar(props){
+    return (
+      <Avatar
+        {...props}
+        imageStyle={{
+          left: {
+            backgroundColor: '#355376',
+          },
+        }}
+      />
+    );
+  }
 
   renderBubble(props) {
     return (
@@ -247,6 +259,23 @@ export default class Chat extends React.Component {
             backgroundColor: '#f0f0f0',
           },
         }}
+      />
+    );
+  }
+
+  renderComposer(props){
+    return (
+      <Composer
+      {...props}
+      placeholder="What's on your mind?"
+      />
+    );
+  }
+  renderSend(props){
+    return (
+      <Send
+      {...props}
+      textStyle={{color: '#66A1E6'}}
       />
     );
   }
@@ -276,28 +305,36 @@ export default class Chat extends React.Component {
   render() {
 
     return(
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={this.onSend}
-        loadEarlier={this.state.loadEarlier}
-        onLoadEarlier={this.onLoadEarlier}
-        isLoadingEarlier={this.state.isLoadingEarlier}
-        onBotActionClicked={this.onBotActionClicked}
+      <View style={styles.container}>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={this.onSend}
+          loadEarlier={this.state.loadEarlier}
+          onLoadEarlier={this.onLoadEarlier}
+          isLoadingEarlier={this.state.isLoadingEarlier}
+          onBotActionClicked={this.onBotActionClicked}
 
-        user={{
-          _id: 1, // sent messages should have same user._id
-        }}
-
-        renderActions={this.renderCustomActions}
-        renderBubble={this.renderBubble}
-        renderCustomView={this.renderCustomView}
-        renderFooter={this.renderFooter}
-      />
+          user={{
+            _id: 1, // sent messages should have same user._id
+          }}
+          renderSend={this.renderSend}
+          renderComposer={this.renderComposer}
+          renderActions={this.renderCustomActions}
+          renderBubble={this.renderBubble}
+          renderAvatar={this.renderAvatar}
+          renderCustomView={this.renderCustomView}
+          renderFooter={this.renderFooter}
+        />
+      </View>
       );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 49,
+    flex: 1,
+  },
   footerContainer: {
     marginTop: 5,
     marginLeft: 10,
