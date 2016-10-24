@@ -7,7 +7,6 @@ import {
 } from 'react-native'
 import TabNavigator from 'react-native-tab-navigator';
 import LoginPage from './LoginPage.js'
-import Chat from './Chat.js'
 import MyList from './MyList.js'
 import TopNavBar from './TopNavBar.js'
 

@@ -3,30 +3,6 @@ const apiURL = 'http://flexteam-dev.herokuapp.com/api';
 const authURL = '/auth';
 const loginURL = '/login'
 
-/*
-export function login(username, password) {
-  return fetch(apiURL + authURL + loginURL, {
-  	method: 'POST',
-		headers: {
-  		'Accept': 'application/json',
-  		'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-  		"username": username,
-  		"password": password,
-  	})
-    
-    .then((response) => response.json())
-    .then((responseJson) => {
-      return responseJson.accessToken;
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-    
-	});
-}
-*/
 
 export async function login(username, password){
 	console.log("login function");	

@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   Navigator,
   Image,
-  Dimensions
+  Dimensions,
+  Alert,
 } from 'react-native'
 import Swiper from 'react-native-swiper'
 import { login } from '../components/Remote.js';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var {height, width} = Dimensions.get('window');
 
@@ -18,10 +20,12 @@ var {height, width} = Dimensions.get('window');
 export default class LoginPage extends React.Component{
 	state = {
 		emailText: "",
-		passwordText: ""
+		passwordText: "",
+		spinnerVisible: false,
 	}
 
 	async submitForm(){
+		this.setState({spinnerVisible: true});
 		console.log("submitting login form");
 		if (this.state.passwordText == ""){
 			//password blank, show error
@@ -40,13 +44,23 @@ export default class LoginPage extends React.Component{
   		//TODO: verify credentials, log user in
   		
 			let response = await login(this.state.emailText, this.state.passwordText);
+			this.setState({spinnerVisible: false});
 			console.log(response);
 			if(response.accessToken){
+				this.navigateToTabBar();
 				this.props._setAuthToken(response.accessToken);
 				var userProfile = response.profile;
-				console.log(userProfile.id);
 				this.props._setUserID(userProfile.id);
-				this.navigateToTabBar();
+				this.props._setUserFirstName(userProfile.firstName);
+				
+			}else{
+				Alert.alert(
+  			'Error Logging In',
+			  response.message,
+			  [
+			    {text: 'OK', onPress: () => console.log('OK Pressed')},
+			  ]
+			)
 			}
 		
   		
@@ -81,6 +95,7 @@ export default class LoginPage extends React.Component{
 	render(){
 		return (
 				<View style={styles.container}>
+					<Spinner visible={this.state.spinnerVisible} />
 					<View  style={styles.contentContainer}>
 						<View style={styles.formContainer}>
 							<View style={styles.headingView}>
@@ -154,11 +169,13 @@ export default class LoginPage extends React.Component{
 
 LoginPage.defaultProps = {
 	_setUserID: {},
+	_setUserFirstName: {},
 	_setAuthToken: {},
 }
 
 LoginPage.propTypes = {
 	_setUserID: React.PropTypes.func,
+	_setUserFirstName: React.PropTypes.func,
 	_setAuthToken: React.PropTypes.func,
 }
 

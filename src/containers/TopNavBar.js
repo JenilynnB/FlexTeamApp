@@ -10,7 +10,7 @@ import {
 import MyList from './MyList.js'
 import SideMenu from 'react-native-side-menu';
 import Menu from './Menu.js';
-import Chat from './Chat.js';
+import Chat from '../components/Chat.js';
 import AddToList from './AddToList.js';	
 
 export default class TopNavBar extends React.Component{

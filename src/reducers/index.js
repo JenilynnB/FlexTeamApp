@@ -1,9 +1,10 @@
 import userReducer from './users';
+import chatReducer from './chat';
 import { combineReducers } from 'redux';
 
 const rootReducer = combineReducers({
-    //routing: routerReducer,
     users: userReducer,
+    chat: chatReducer,
 });
 
 export default rootReducer;

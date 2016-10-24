@@ -13,8 +13,8 @@ import PubNub from 'pubnub';
 
 
 import {GiftedChat, Actions, Bubble, Avatar, Composer, Send} from 'react-native-gifted-chat';
-import CustomActions from './CustomActions';
-import CustomView from './CustomView';
+import CustomActions from '../containers/CustomActions';
+import CustomView from '../containers/CustomView';
 import BotBubble from '../components/BotBubble.js';
 import botMessages from '../data/bot-messages.js';
 
