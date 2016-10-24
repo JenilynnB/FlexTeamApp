@@ -1,9 +1,9 @@
-import appReducer from './app';
+import userReducer from './users';
 import { combineReducers } from 'redux';
 
 const rootReducer = combineReducers({
     //routing: routerReducer,
-    app: appReducer,
+    users: userReducer,
 });
 
 export default rootReducer;

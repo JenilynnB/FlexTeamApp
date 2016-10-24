@@ -48,7 +48,8 @@ export async function login(username, password){
 	  	})
 	  });
   	let responseJson = await response.json();
-  	console.log(responseJson);
+  	//console.log("response");
+  	//console.log(responseJson);
     return responseJson;
 	}catch (error){
 		console.log("error: ");

@@ -21,7 +21,7 @@ export default class LoginPage extends React.Component{
 		passwordText: ""
 	}
 
-	submitForm(){
+	async submitForm(){
 		console.log("submitting login form");
 		if (this.state.passwordText == ""){
 			//password blank, show error
@@ -38,7 +38,18 @@ export default class LoginPage extends React.Component{
 		} else {
   		// valid email
   		//TODO: verify credentials, log user in
-  		var accessToken = login(this.state.emailText, this.state.passwordText);
+  		
+			let response = await login(this.state.emailText, this.state.passwordText);
+			console.log(response);
+			if(response.accessToken){
+				this.props._setAuthToken(response.accessToken);
+				var userProfile = response.profile;
+				console.log(userProfile.id);
+				this.props._setUserID(userProfile.id);
+				this.navigateToTabBar();
+			}
+		
+  		
 		}
 
 		
@@ -49,6 +60,14 @@ export default class LoginPage extends React.Component{
   	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@+"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 	};
+
+	navigateToTabBar(){
+		var navigator = this.props.navigator;
+		navigator.replace({
+      id: 'TabBar',
+      name: 'TabBar',
+    });	
+	}
 
 
 	navigateToCreateAccountPage(){
@@ -71,6 +90,7 @@ export default class LoginPage extends React.Component{
 							<View><TextInput  
 								placeholder="Your Email"
 								keyboardType="email-address"
+								autoCapitalize='none'
 								onChangeText={(text) => this.setState({emailText: text})}
 								style={styles.textbox} /></View>
 							<View><TextInput 
@@ -130,6 +150,16 @@ export default class LoginPage extends React.Component{
 		)
 	}
 
+}
+
+LoginPage.defaultProps = {
+	_setUserID: {},
+	_setAuthToken: {},
+}
+
+LoginPage.propTypes = {
+	_setUserID: React.PropTypes.func,
+	_setAuthToken: React.PropTypes.func,
 }
 
 var carouselStyles = StyleSheet.create({
