@@ -36,18 +36,20 @@ export default class RootNav extends React.Component {
   };
 
   componentWillMount() {
-
     //TODO: see if the user is logged in
     //If the user is logged in, set the user state in the app  
   }
 
 
   getInitialRoute(){
+    /*
     if (this.props.userID == 0) {
       return routes[1];
     }else{
       return routes[0];
     }
+    */
+    return routes[0];
   }
 
   _setUserID(userID){

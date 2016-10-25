@@ -47,12 +47,11 @@ export default class LoginPage extends React.Component{
 			this.setState({spinnerVisible: false});
 			console.log(response);
 			if(response.accessToken){
-				this.navigateToTabBar();
 				this.props._setAuthToken(response.accessToken);
 				var userProfile = response.profile;
 				this.props._setUserID(userProfile.id);
 				this.props._setUserFirstName(userProfile.firstName);
-				
+				this.navigateToTabBar();
 			}else{
 				Alert.alert(
   			'Error Logging In',

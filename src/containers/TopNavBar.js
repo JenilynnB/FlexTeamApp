@@ -10,7 +10,7 @@ import {
 import MyList from './MyList.js'
 import SideMenu from 'react-native-side-menu';
 import Menu from './Menu.js';
-import Chat from '../components/Chat.js';
+import Chat from './ChatContainer.js';
 import AddToList from './AddToList.js';	
 
 export default class TopNavBar extends React.Component{
@@ -49,7 +49,8 @@ export default class TopNavBar extends React.Component{
   renderScene(route, Navigator){
   	 if (this.props.scene === "chat"){
 	  	return(
-	  		<Chat />
+	  		<Chat 
+	  		/>
 	  	);
 	  }else if (this.props.scene === 'list'){
 	  	return(
@@ -93,6 +94,7 @@ export default class TopNavBar extends React.Component{
   }
 
 	render(){
+		console.log("rendering TopNavBar");
 		return(
 		<SideMenu
 		    menu={<Menu onItemSelected={this.onMenuItemSelected} />}

@@ -19,7 +19,6 @@ export default class TabBar extends React.Component {
     this.state = {
       selectedTab: 'chat'
     }
-
   }
 
   navigateToAddToList(){
@@ -39,6 +38,7 @@ export default class TabBar extends React.Component {
   }
 
   render() {
+    console.log("rendering tabbar");
     return (
       
       <Tabs tabBarStyle={styles.tabBar}>

@@ -29,21 +29,32 @@ const pubnub = new PubNub({
   publishKey   : publish_key,
   subscribeKey : subscribe_key,
   ssl: true,
-  uuid: username
 });
 
+
 export default class Chat extends React.Component {
+  static propTypes = {
+    messages: React.PropTypes.array,
+    lastMessageTimestamp: React.PropTypes.string,
+    userID: React.PropTypes.string,
+    addMessage: React.PropTypes.func,
+    addHistory: React.PropTypes.func,
+  }
+
+
   constructor(props) {
     super(props);
+    /*
     this.state = {
       messages: [],
-      loadEarlier: true,
-      typingText: null,
-      isLoadingEarlier: false,
+      //loadEarlier: true,
+      //typingText: null,
+      //isLoadingEarlier: false,
       userId: 1,
-      chattingWith: 'chatbot',
-      botState: 'welcome',
+      //chattingWith: 'chatbot',
+      //botState: 'welcome',
     };
+    */
 
     this._isMounted = false;
     this.onSend = this.onSend.bind(this);
@@ -51,26 +62,29 @@ export default class Chat extends React.Component {
     this.renderCustomActions = this.renderCustomActions.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
     this.renderAvatar = this.renderAvatar.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
-    this.onLoadEarlier = this.onLoadEarlier.bind(this);
+    //this.renderFooter = this.renderFooter.bind(this);
+    //this.onLoadEarlier = this.onLoadEarlier.bind(this);
     this.onBotActionClicked = this.onBotActionClicked.bind(this);
 
     this._isAlright = null;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     
     //TODO: Get list of chat channels user is subscribed to
     //TODO: If no chat channel exists, create a new one
+    pubnub.uuid = this.props.userID;
 
     pubnub.addListener({
       message: (m) => this.success([m.message])
+      //message: (m) => this.props.addMessage(m.message)
     });
     
     pubnub.subscribe({
       channels: [channel],
     });
 
+    this.fetchHistory();
     this.sendBotMessage('welcome')
     this._isMounted = true;
   }
@@ -78,6 +92,24 @@ export default class Chat extends React.Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
+
+  fetchHistory = () => {
+    const { props } = this;
+    pubnub.history({
+      channel: 'ReactChat',
+      count: 15,
+      start: props.lastMessageTimestamp,
+      callback: (data) => {
+      // data is Array(3), where index 0 is an array of messages
+      // and index 1 and 2 are start and end dates of the messages
+      props.addHistory(data[0], data[1]);
+      },
+    });
+  }
+
+
+
+
 
   // grab data from PubNub History API when PubNub is connected for the first time
   connect() { 
@@ -89,36 +121,42 @@ export default class Chat extends React.Component {
 
   //At the success callback, update the message list
   success(m){
+    this.props.addMessage(m);
+/*
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, m), 
       };
     });
+    */
      
   }
 
+/*
   onLoadEarlier() {
     this.setState((previousState) => {
       return {
         isLoadingEarlier: true,
       };
     });
+    
 
     setTimeout(() => {
       if (this._isMounted === true) {
         this.setState((previousState) => {
           return {
             messages: GiftedChat.prepend(previousState.messages, require('../data/old_messages.js')),
-            loadEarlier: false,
-            isLoadingEarlier: false,
+            //loadEarlier: false,
+            //isLoadingEarlier: false,
           };
         });
       }
     }, 1000); // simulating network
   }
+  */
 
   onSend(messages = []) {
-    
+    console.log("sending");
     pubnub.publish({
       message: messages[0],
       channel: channel,
@@ -134,11 +172,13 @@ export default class Chat extends React.Component {
       }
     );
     
+    /*
     //If chatting with the bot, possibly do something with the message sent
     if (this.state.botState == 'addToList' && this.state.chattingWith == 'chatbot'){
       //TODO: add message[0] as a list item
       this.sendBotMessage('howUrgent');
     }
+    */
     // for demo purpose
     //this.answerDemo(messages);
   }
@@ -152,6 +192,7 @@ export default class Chat extends React.Component {
     }
   }
 
+/*
   answerDemo(messages) {
     if (messages.length > 0) {
       if ((messages[0].image || messages[0].location) || !this._isAlright) {
@@ -168,12 +209,12 @@ export default class Chat extends React.Component {
         if (messages.length > 0) {
           if(this.state.botState == 'addingListItem'){
             this.onReceive          
-          /*
+          
           if (messages[0].image) {
             this.onReceive('Nice picture!');
           } else if (messages[0].location) {
             this.onReceive('My favorite place');
-            */
+            
           } else {
             if (!this._isAlright) {
               this._isAlright = true;
@@ -190,6 +231,7 @@ export default class Chat extends React.Component {
       });
     }, 1000);
   }
+  */
 
   sendBotMessage(action){
     messageToSend = botMessages.find((m)=>m.key==action);
@@ -287,7 +329,7 @@ export default class Chat extends React.Component {
       />
     );
   }
-
+/*
   renderFooter(props) {
     if (this.state.typingText) {
       return (
@@ -300,18 +342,14 @@ export default class Chat extends React.Component {
     }
     return null;
   }
-
+*/
 
   render() {
-
     return(
       <View style={styles.container}>
         <GiftedChat
-          messages={this.state.messages}
+          messages={this.props.messages}
           onSend={this.onSend}
-          loadEarlier={this.state.loadEarlier}
-          onLoadEarlier={this.onLoadEarlier}
-          isLoadingEarlier={this.state.isLoadingEarlier}
           onBotActionClicked={this.onBotActionClicked}
 
           user={{
@@ -323,7 +361,6 @@ export default class Chat extends React.Component {
           renderBubble={this.renderBubble}
           renderAvatar={this.renderAvatar}
           renderCustomView={this.renderCustomView}
-          renderFooter={this.renderFooter}
         />
       </View>
       );

@@ -1,5 +1,4 @@
 import { SET_CURRENT_USERID, SET_CURRENT_USER_FIRSTNAME, SET_AUTH_TOKEN, ADD_MESSAGE, ADD_HISTORY } from '../constants';
-//import { SET_AUTH_TOKEN } from '../constants';
 
 export function setCurrentUserID(userID) {
     return {

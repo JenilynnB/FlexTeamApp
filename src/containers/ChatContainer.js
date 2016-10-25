@@ -8,8 +8,8 @@ function mapStateToProps(state){
 		userID: state.users.get('userID'),
 		userFirstName: state.users.get('userFirstName'),
     authToken: state.users.get('authToken'),
-    history: state.app.get('messages').toJS(),
-    lastMessageTimestamp: state.app.get('lastMessageTimestamp'),
+    messages: state.chat.get('messages').toJS(),
+    lastMessageTimestamp: state.users.get('lastMessageTimestamp'),
 	};
 }
 
@@ -19,6 +19,8 @@ function mapDispatchToProps(dispatch){
   	addHistory: (messages, timestamp) => dispatch(addHistory(messages, timestamp)),
   };
 }
+
+
 
 export default connect(
 	mapStateToProps,

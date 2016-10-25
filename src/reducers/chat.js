@@ -10,10 +10,10 @@ function chatReducer(state = INITIAL_STATE, action = {}){
 	switch(action.type){
 		case ADD_MESSAGE:
 			return state
-			.update('messages', (messages) => messages.concat(action.payload));
+			.update('messages', (messages) => messages.unshift(...action.payload));
 		case ADD_HISTORY:
 			return state
-			.update('messages', (messages) => messages.unshift(...action.payload.messages))
+			.update('messages', (messages) => messages.concat(action.payload.messages))
 			.update('lastMessageTimestamp', () => action.payload.timestamp);
 		default:
 			return state;
