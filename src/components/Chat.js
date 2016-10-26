@@ -6,7 +6,8 @@ import {
   View,
   Navigator,
   Image,
-  TouchableHighlight
+  TouchableHighlight,
+  Alert,
 } from 'react-native';
 import SideMenu from 'react-native-side-menu'
 import PubNub from 'pubnub';
@@ -19,11 +20,9 @@ import BotBubble from '../components/BotBubble.js';
 import botMessages from '../data/bot-messages.js';
 
 
-var username = 'Saujin';
-const channel = 'main-chat';
-
 const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
 const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
+var channel = '';
 
 const pubnub = new PubNub({                         
   publishKey   : publish_key,
@@ -74,6 +73,7 @@ export default class Chat extends React.Component {
     //TODO: Get list of chat channels user is subscribed to
     //TODO: If no chat channel exists, create a new one
     pubnub.uuid = this.props.userID;
+    channel = this.props.userID + "_main";
 
     pubnub.addListener({
       message: (m) => this.success([m.message])
@@ -85,7 +85,7 @@ export default class Chat extends React.Component {
     });
 
     this.fetchHistory();
-    this.sendBotMessage('welcome')
+    //this.sendBotMessage('welcome')
     this._isMounted = true;
   }
 
@@ -96,27 +96,25 @@ export default class Chat extends React.Component {
   fetchHistory = () => {
     const { props } = this;
     pubnub.history({
-      channel: 'ReactChat',
-      count: 15,
-      start: props.lastMessageTimestamp,
-      callback: (data) => {
-      // data is Array(3), where index 0 is an array of messages
-      // and index 1 and 2 are start and end dates of the messages
-      props.addHistory(data[0], data[1]);
-      },
-    });
-  }
-
-
-
-
-
-  // grab data from PubNub History API when PubNub is connected for the first time
-  connect() { 
-    pubnub.history({
       channel: channel,
-      count: 50,
-    });
+      count: 15,
+      includeTimetoken: true,
+      start: props.lastMessageTimestamp
+    },
+    function(status, response){
+      if (!status.error){
+        props.addHistory(response);
+      }else{
+        Alert.alert(
+        'Error Fetching History',
+        status,
+        [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ]
+      )
+      }
+      },
+    );
   }
 
   //At the success callback, update the message list

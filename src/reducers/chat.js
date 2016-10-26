@@ -12,8 +12,14 @@ function chatReducer(state = INITIAL_STATE, action = {}){
 			return state
 			.update('messages', (messages) => messages.unshift(...action.payload));
 		case ADD_HISTORY:
+			//console.log("ADD HISTORY reducer");
+			//console.log(action.payload);
+			//function getMessage{} (m) => m.entry};
+			var responseMessages = action.payload.messages.messages;
+			//var messagesToAdd = responseMessages.map( m => m.entry );
+			//console.log(messagesToAdd);
 			return state
-			.update('messages', (messages) => messages.concat(action.payload.messages))
+			.update('messages', (messages) => messages.concat(responseMessages.map( m => m.entry )))
 			.update('lastMessageTimestamp', () => action.payload.timestamp);
 		default:
 			return state;

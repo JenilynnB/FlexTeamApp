@@ -32,7 +32,7 @@ export function addMessage(message) {
 export function addHistory(messages, timestamp) {
 	return {
 		type: ADD_HISTORY,
-		payload: {history, timestamp}
+		payload: {messages, timestamp}
 
 	}
 }
