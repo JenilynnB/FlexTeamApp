@@ -7,11 +7,12 @@ import {
   Image,
   TouchableHighlight
 } from 'react-native';
-import MyList from './MyList.js'
+import MyList from './MyListContainer.js'
 import SideMenu from 'react-native-side-menu';
 import Menu from './Menu.js';
 import Chat from './ChatContainer.js';
 import AddToList from './AddToList.js';	
+import EditProfile from './EditProfileContainer.js'
 
 export default class TopNavBar extends React.Component{
 	constructor(props) {
@@ -60,10 +61,14 @@ export default class TopNavBar extends React.Component{
 	  	return(
 	  		<AddToList />
 	  	);
+	  }else if (this.props.scene === 'editProfile'){
+	  	return(
+	  		<EditProfile />
+	  	)
 	  }
   }
   renderLeftButton(route, navigator, index, navState){
-  	if (this.props.scene === 'addToList'){
+  	if (this.props.scene === 'addToList' || this.props.scene === 'editProfile'){
 			return(
 				<TouchableHighlight style={styles.navBarButton} onPress={this.cancelPressed.bind(this)}>
 			      <Text style={styles.navBarBtnText}>Cancel</Text>
@@ -90,14 +95,19 @@ export default class TopNavBar extends React.Component{
 			return(
 				<Text style={styles.navBarTitleText}>Add to List</Text>
 			);
+		}else if(this.props.scene === 'editProfile'){
+			return(
+				<Text style={styles.navBarTitleText}>Edit Profile</Text>
+			);
 		}
   }
 
 	render(){
 		console.log("rendering TopNavBar");
+		
 		return(
 		<SideMenu
-		    menu={<Menu onItemSelected={this.onMenuItemSelected} />}
+		    menu={<Menu onItemSelected={this.onMenuItemSelected} navigator = {this.props.navigator}/>}
 		    isOpen={this.state.menuIsOpen}
 		    menuPosition='right'
 		    onChange={(isOpen) => this.updateMenuState(isOpen)}

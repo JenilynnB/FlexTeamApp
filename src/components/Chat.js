@@ -8,6 +8,7 @@ import {
   Image,
   TouchableHighlight,
   Alert,
+  AsyncStorage
 } from 'react-native';
 import SideMenu from 'react-native-side-menu'
 import PubNub from 'pubnub';
@@ -18,7 +19,6 @@ import CustomActions from '../containers/CustomActions';
 import CustomView from '../containers/CustomView';
 import BotBubble from '../components/BotBubble.js';
 import botMessages from '../data/bot-messages.js';
-
 
 const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
 const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
@@ -68,6 +68,12 @@ export default class Chat extends React.Component {
     this._isAlright = null;
   }
 
+  componentWillMount() {
+    //TODO: see if the user is logged in
+    //If the user is logged in, set the user state in the app  
+    AsyncStorage.getAllKeys((err, response) => console.log(response));
+  }
+
   componentDidMount() {
     
     //TODO: Get list of chat channels user is subscribed to
@@ -98,11 +104,14 @@ export default class Chat extends React.Component {
     pubnub.history({
       channel: channel,
       count: 15,
+      reverse: false,
       includeTimetoken: true,
       start: props.lastMessageTimestamp
     },
     function(status, response){
       if (!status.error){
+        console.log("fetch history response");
+        console.log(response);
         props.addHistory(response);
       }else{
         Alert.alert(
@@ -351,7 +360,8 @@ export default class Chat extends React.Component {
           onBotActionClicked={this.onBotActionClicked}
 
           user={{
-            _id: 1, // sent messages should have same user._id
+            _id: this.props.userID,
+            firstName: this.props.userFirstName,
           }}
           renderSend={this.renderSend}
           renderComposer={this.renderComposer}

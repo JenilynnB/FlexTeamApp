@@ -8,28 +8,25 @@ import {
   ListView,
 } from 'react-native'
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
-import PubNub from 'pubnub';
+//import PubNub from 'pubnub';
 import { Icon } from 'react-native-elements'
-
-var username = 'Saujin';
-const channel = 'list5';
-const user = {"_id": "4","name": "Saujin"}
-
-const publish_key = 'pub-c-04f04d57-09d0-428a-9ca9-c750a0811e17';
-const subscribe_key = 'sub-c-e6204314-8430-11e6-a68c-0619f8945a4f';
-const listSections = ['NOW', 'LATER', 'PROJECTS', 'COMPLETE'];
-const completeSectionID = 3;
-const sectionPrefix = 'ID';
-
-const pubnub = new PubNub({                         
-  publishKey   : publish_key,
-  subscribeKey : subscribe_key,
-  ssl: true,
-  uuid: username
-});
+import { getList } from '../components/Remote.js';
 
 
 export default class MyList extends React.Component{
+	static propTypes = {
+    
+    userID: React.PropTypes.string,
+    userFirstName: React.PropTypes.string,
+    authToken: React.PropTypes.string,
+
+    listItems: React.PropTypes.object,
+    addListItem: React.PropTypes.func,
+    removeListItem: React.PropTypes.func,
+    editListItem: React.PropTypes.func,
+
+    dataSource: React.PropTypes.object,
+  }
 	
 	constructor(){
 		super();
@@ -40,131 +37,55 @@ export default class MyList extends React.Component{
 	      });
 
 		this.state = {
-			data: [],
 			dataSource: ds.cloneWithRowsAndSections([]),
 	  }
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if(nextProps.listItems !== this.props.listItems){
+			let data = nextProps.listItems;
+			this.setState ({
+				dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
+			});
+
+		}
+	}
 
 	componentWillMount() {
-
-		this.connect();
-	  pubnub.addListener({
-      message: (m) => this.success([m.message])
-    });
-	    
-    pubnub.subscribe({
-      channels: [channel],
-    });   
-
-    pubnub.setFilterExpression("user != " + pubnub.uuid); 
-	}
-
-
-	connect() { 
-	    console.log("connect");
-	    var self = this;
-	    pubnub.history(
-		  	{
-		      channel: channel,
-		      count: 50
-		  	},
-		    function (status, response) {
-		        self.success(response.messages);
-		    }
-			);
-	}
-
-	//Pubnub success callback
-	success(m){
-		console.log("success");
-
-		var data = this.convertListDatatoMap(m);
-		console.log(data);
-
-		this.setState({
-			data: data,
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(data),
-      
-  	});
-  	
-	}
-
-	convertListDatatoMap(data){
-
-		var listSectionsMap = {};  // Create the blank map
-
-		for (var i = 0; i<data.length; i++) {
-			var item = data[i];
-			
-			var newListSectionsMap = this.addItemToListMap(item, listSectionsMap);
-		}
-		return newListSectionsMap;
-	}
-
-	addItemToListMap(item, listSectionsMap){
 		
-		console.log("adding to map");
-		//Items from history are formatted slightly differently, this extracts them
-		if (item.entry != undefined) {
-			item = item.entry;
-		}
-
-		if(item.deleted != true){
-			var sectionName = listSections[item.list];
-			if (!listSectionsMap[sectionName]){
-				listSectionsMap[sectionName] = [];
-			}
-
-			listSectionsMap[sectionName].push(item);
-			console.log(listSectionsMap[sectionName]);
-			console.log(listSectionsMap[sectionName].length);
-		}
-
-
-		return listSectionsMap
+		//Get initial list when component first mounts
+		this.fetchListData();
 	}
-	
+
+
+	async fetchListData(){
+		var authToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1ODEwMTZmOTlkMDBjMzAwMDNkMDhlMDEiLCJleHBpcmVzSW4iOiIyMDE2LTExLTA0VDE0OjQ1OjE0Ljk4MFoifQ.zo1hZZFfIorieNTunJbYZQBwWVhjY6ZOYXvHXONpFFM';
+		var listData = await getList(authToken);
+		
+		for (var i = listData.length - 1; i >= 0; i--) {
+			this.props.addListItem(listData[i]);
+			
+		}
+	}
+
+
 
 	deleteRow(sectionID, rowID, rowMap) {
 		
-		console.log('deleting row');
-		var data = Object.assign({}, this.state.data);
-		var item = data[sectionID][rowID];
-
-		item.deleted = true;
+		console.log("deleting row");
+		//Get the current list item id
 
 		rowMap[`${sectionID}${rowID}`].closeRow();
-		
-		data[sectionID].splice(rowID, 1);
 
-		console.log(data[sectionID]);
-		console.log(data[sectionID].length);
-		if (data[sectionID].length == 0 ){
-			console.log("deleting section");
-			delete data[sectionID];
-		}
-
+		var itemToDelete = this.props.listItems[sectionID][rowID];
+		var itemToDeleteFormatted = {_id: itemToDelete._id, type: sectionID}
+		var newList = this.props.removeListItem(itemToDeleteFormatted);
 
 		this.setState({
-			data: data,
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(data),
+			
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(newList),
       
   	});
-
-		pubnub.publish({
-			message: item,
-			channel: channel,
-			meta: {userDevice: pubnub.uuid}
-		},
-		function(status, response){
-			if (status.error) {
-        // handle error
-        console.log(status)
-      } else {
-        console.log("message Published w/ timetoken", response.timetoken)
-      }
-		});
 
 	}
 
@@ -172,22 +93,24 @@ export default class MyList extends React.Component{
 	markRowComplete(sectionID, rowID, rowMap){
 		
 		console.log("marking complete");
-		var data = Object.assign({}, this.state.data);
-		var item = data[sectionID][rowID];
-		var newItem = Object.assign({}, item);
+		//Get the current list item id
 
-		
-		this.deleteRow(sectionID, rowID, rowMap);
+		rowMap[`${sectionID}${rowID}`].closeRow();
 
-		newItem.list = completeSectionID;
-		var newList = this.addItemToListMap(newItem, data);
+		var itemToEdit = this.props.listItems[sectionID][rowID];
+		var itemID = itemToEdit._id;
+
+		var newItem = {_id: itemID, type: "complete", text: itemToEdit.text}
+		var newList = this.props.editListItem(newItem, sectionID);
+
 
 		this.setState({
-			data: newList,
+			
 			dataSource : this.state.dataSource.cloneWithRowsAndSections(newList),
       
   	});
 
+/*
 		pubnub.publish({
 			message: newItem,
 			channel: channel,
@@ -201,14 +124,12 @@ export default class MyList extends React.Component{
         console.log("message Published w/ timetoken", response.timetoken)
       }
 		});
-
+*/
 	}
 
 
 	_renderRow(rowData, sectionID, rowID, rowMap){
 			//var sectionIndex = sectionID.substring(sectionPrefix.length);
-			console.log("rendering row");
-
 			return(
 
 				<SwipeRow
@@ -256,8 +177,6 @@ export default class MyList extends React.Component{
 	}
 
 	_renderSectionHeader(headerData, sectionIndex){
-		console.log(headerData);
-		console.log(sectionIndex);
 		return(
 			<TouchableOpacity
 				onPress={()=>this.toggleSectionOpen(sectionIndex)}

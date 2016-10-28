@@ -4,13 +4,15 @@ import {
   Text,
   View,
   Image,
+  AsyncStorage,
+  TouchableOpacity,
 } from 'react-native'
 import TabNavigator from 'react-native-tab-navigator';
 import LoginPage from './LoginPage.js'
-import MyList from './MyList.js'
 import TopNavBar from './TopNavBar.js'
 
 import { Tabs, Tab, Icon } from 'react-native-elements'
+import {USER_ID_KEY, USER_FIRSTNAME_KEY, AUTH_TOKEN_KEY} from '../constants'
 
 
 export default class TabBar extends React.Component {
@@ -22,23 +24,31 @@ export default class TabBar extends React.Component {
   }
 
   navigateToAddToList(){
-    console.log("navigat to add to list");
     var navigator = this.props.navigator;
     navigator.push({id: 'AddToList'});
-    /*
-    navigator.replace({
-        id: 'AddToList',
-        name: 'AddToList',
-      });
-      */
+
   }
+
 
   changeTab (selectedTab) {
     this.setState({selectedTab})
   }
 
+  _logoutPressed(){
+    console.log("clicked Log Out");
+    //this.props._setAuthToken('');
+    //this.props._setUserID('');
+    //this.props._setUserFirstName('');
+    AsyncStorage.removeItem(USER_ID_KEY);
+    AsyncStorage.removeItem(USER_FIRSTNAME_KEY);
+    AsyncStorage.removeItem(AUTH_TOKEN_KEY);
+  }
+
+
+
   render() {
     console.log("rendering tabbar");
+    //console.log(this.props.navigator);
     return (
       
       <Tabs tabBarStyle={styles.tabBar}>
@@ -52,7 +62,9 @@ export default class TabBar extends React.Component {
           onPress={() => this.changeTab('chat')}
           selected={this.state.selectedTab==='chat'}
           >
-          <TopNavBar scene='chat'/>
+          <TopNavBar 
+          //navigator = {this.props.navigator}
+          scene='chat'/>
         </Tab>
 
         <Tab
@@ -89,6 +101,9 @@ export default class TabBar extends React.Component {
           selected={this.state.selectedTab==='projects'}
           >
           <View>
+            <TouchableOpacity onPress={this._logoutPressed()}>
+              <Text>Log Out</Text>
+            </TouchableOpacity>
           </View>
         </Tab>
 

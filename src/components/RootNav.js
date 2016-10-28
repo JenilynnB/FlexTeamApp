@@ -5,8 +5,10 @@ import {
   Text,
   View,
   Navigator,
-  StatusBar
+  StatusBar,
+  AsyncStorage
 } from 'react-native'
+  
 
 import TabBar from '../containers/TabBar.js'
 import LoginPage from '../containers/LoginPage.js'
@@ -15,6 +17,8 @@ import CreateProfilePage from '../containers/CreateProfilePage.js'
 import Chat from '../containers/ChatContainer.js'
 import AddToList from '../containers/AddToList.js'
 import TopNavBar from '../containers/TopNavBar.js'
+
+import {USER_ID_KEY, AUTH_TOKEN_KEY, USER_FIRSTNAME_KEY} from '../constants';
 
 
   var routes = [
@@ -38,18 +42,50 @@ export default class RootNav extends React.Component {
   componentWillMount() {
     //TODO: see if the user is logged in
     //If the user is logged in, set the user state in the app  
+    
+    this.loadStoredState();
+  }
+
+  async loadStoredState(){
+    AsyncStorage.getAllKeys((err, response) => console.log(response));
+    AsyncStorage.getItem(USER_ID_KEY, 
+        (error, result) => {
+          if (error === null) {
+            console.log("stored user ID");
+            console.log(result);  
+            this.props.setUserID(result);
+          }
+        });
+        
+    var token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+    if (token != null) {
+      this.props.setAuthToken(token);  
+    }
+
+    var firstName = await AsyncStorage.getItem(USER_FIRSTNAME_KEY);
+    if (firstName != null) {
+      this.props.setUserFirstName(firstName);  
+    }
+    
+    console.log("Root Nav");
+    console.log(this.props.userID);
+    console.log(token);
+    console.log(firstName);
   }
 
 
   getInitialRoute(){
+    var userID = this.props.userID
     /*
-    if (this.props.userID == 0) {
+    if (userID == 0) {
       return routes[1];
     }else{
       return routes[0];
     }
     */
+    
     return routes[0];
+    
   }
 
   _setUserID(userID){
@@ -87,7 +123,9 @@ export default class RootNav extends React.Component {
 
   renderScene(route, navigator) {
     var routeID = route.id;
-    if (routeID === 'LoginPage') {
+    switch(routeID){
+
+    case 'LoginPage':
       return (
         <LoginPage
           _setUserID = {this._setUserID.bind(this)}
@@ -95,32 +133,45 @@ export default class RootNav extends React.Component {
           _setAuthToken = {this._setAuthToken.bind(this)}
           navigator = {navigator} />
       );
-    } if (routeID === 'CreateUserPage'){
+    case 'CreateUserPage':
       return(
         <CreateUserPage
           navigator = {navigator} />
       )
-    } if (routeID === 'CreateProfilePage') {
+    case 'CreateProfilePage':
       return (
         <CreateProfilePage
           navigator = {navigator} />
         )
-    } if (routeID === 'TabBar') { 
+    case 'TabBar':
       return (
         <TabBar
           navigator = {navigator} 
           configureScene={(route, routeStack) => Navigator.SceneConfigs.VerticalDownSwipeJump}
           />
         )
-    } if (routeID === 'AddToList') {
+    case 'AddToList':
       return (
         <TopNavBar 
+          navigator = {navigator}
           scene='addToList' 
           configureScene={(route, routeStack) => Navigator.SceneConfigs.VerticalUpSwipeJump}
-          navigator = {navigator}
           />
 
         )
+    case 'EditProfile':
+      
+      return (
+        <TopNavBar
+          scene = 'editProfile'
+          configureScene={(route, routeStack) => Navigator.SceneConfigs.VerticalUpSwipeJump}
+          _setUserID = {this._setUserID.bind(this)}
+          _setUserFirstName = {this._setUserFirstName.bind(this)}
+          _setAuthToken = {this._setAuthToken.bind(this)}
+          navigator = {navigator} />
+        );
+    default:
+      return;
     }
   }
 }

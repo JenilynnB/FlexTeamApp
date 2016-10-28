@@ -9,10 +9,13 @@ import {
   Image,
   Dimensions,
   Alert,
+  AsyncStorage,
 } from 'react-native'
 import Swiper from 'react-native-swiper'
 import { login } from '../components/Remote.js';
 import Spinner from 'react-native-loading-spinner-overlay';
+import validateEmail from '../components/helpers.js';
+import {USER_ID_KEY, AUTH_TOKEN_KEY, USER_FIRSTNAME_KEY} from '../constants';
 
 var {height, width} = Dimensions.get('window');
 
@@ -25,32 +28,61 @@ export default class LoginPage extends React.Component{
 	}
 
 	async submitForm(){
-		this.setState({spinnerVisible: true});
+		
 		console.log("submitting login form");
-		if (this.state.passwordText == ""){
-			//password blank, show error
-			console.log("blank password");
-		}
 		if (this.state.emailText == ""){
 			//email blank, show error
-			console.log("blank email");
-		}
-
-		if (!this.validateEmail(this.state.emailText)) {
+			Alert.alert(
+  			'Blank email',
+			  'Please fill in an email address',
+			  [
+			    {text: 'OK', onPress: () => console.log('OK Pressed')},
+			  ]
+				)
+		}else if (this.state.passwordText == ""){
+			//password blank, show error
+			Alert.alert(
+  			'Blank password',
+			  'Please fill in a password',
+			  [
+			    {text: 'OK', onPress: () => console.log('OK Pressed')},
+			  ]
+				)
+		}else if (!validateEmail(this.state.emailText)) {
 		  // not a valid email
 		  console.log("invalid email address");
+		  Alert.alert(
+  			'Invalid email',
+			  'Are you sure that\'s an email address? It doesn\'t look like one',
+			  [
+			    {text: 'OK', onPress: () => console.log('OK Pressed')},
+			  ]
+				)
 		} else {
   		// valid email
-  		//TODO: verify credentials, log user in
-  		
+  		this.setState({spinnerVisible: true});
+
 			let response = await login(this.state.emailText, this.state.passwordText);
 			this.setState({spinnerVisible: false});
-			console.log(response);
 			if(response.accessToken){
-				this.props._setAuthToken(response.accessToken);
+				
+				//Setting user state props
 				var userProfile = response.profile;
+				this.props._setAuthToken(response.accessToken);
 				this.props._setUserID(userProfile.id);
 				this.props._setUserFirstName(userProfile.firstName);
+				
+				try {
+
+					var token = await AsyncStorage.setItem(AUTH_TOKEN_KEY, response.accessToken)
+					AsyncStorage.getAllKeys((response)=>{console.log(response)});
+					AsyncStorage.setItem(USER_ID_KEY, userProfile.id);
+					AsyncStorage.setItem(USER_FIRSTNAME_KEY, userProfile.firstName);
+				}catch (error){
+					console.log("there's an error");
+					console.log(error);
+				}
+
 				this.navigateToTabBar();
 			}else{
 				Alert.alert(
@@ -59,20 +91,10 @@ export default class LoginPage extends React.Component{
 			  [
 			    {text: 'OK', onPress: () => console.log('OK Pressed')},
 			  ]
-			)
+				)
 			}
-		
-  		
 		}
-
-		
-
 	}
-
-	validateEmail = (email) => {
-  	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@+"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-	};
 
 	navigateToTabBar(){
 		var navigator = this.props.navigator;
