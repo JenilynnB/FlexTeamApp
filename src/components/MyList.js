@@ -11,6 +11,8 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Icon } from 'react-native-elements'
 import { getList, editListItem, deleteListItem } from '../components/Remote.js';
 
+const sectionIDs = {"now": "NOW", "later": "LATER", "movedToProjects": "MOVED TO PROJECTS", "complete": "COMPLETE"};
+
 const authToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1ODEwMTZmOTlkMDBjMzAwMDNkMDhlMDEiLCJleHBpcmVzSW4iOiIyMDE2LTExLTA0VDE0OjQ1OjE0Ljk4MFoifQ.zo1hZZFfIorieNTunJbYZQBwWVhjY6ZOYXvHXONpFFM';
 	
 
@@ -46,8 +48,6 @@ export default class MyList extends React.Component{
 		
 		if(nextProps.listItems !== this.props.listItems){
 			let data = nextProps.listItems;
-			console.log("component will recieve props");
-			console.log(data);
 			this.setState ({
 				dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
 			});
@@ -78,22 +78,14 @@ export default class MyList extends React.Component{
 
 	deleteRow(sectionID, rowID, rowMap) {
 		
-		//console.log("deleting row");
 		//Get the current list item id
 
-		console.log("deleting row");
-		console.log(sectionID);
-		console.log(rowID);
 		rowMap[`${sectionID}${rowID}`].closeRow();
 
 		var itemToDelete = this.props.listItems[sectionID][rowID];
 		var itemToDeleteFormatted = {_id: itemToDelete._id, type: sectionID}
 		this.props.removeListItem(itemToDeleteFormatted);
-/*
-		this.setState({
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(this.props.listItems),
-  	});
-*/
+
 		//Remote method to delete from server
 		deleteListItem(authToken, itemToDeleteFormatted);
 
@@ -102,7 +94,6 @@ export default class MyList extends React.Component{
 
 	markRowComplete(sectionID, rowID, rowMap){
 		
-		//console.log("marking complete");
 		//Get the current list item id
 
 		rowMap[`${sectionID}${rowID}`].closeRow();
@@ -115,29 +106,7 @@ export default class MyList extends React.Component{
 		
 		//Remote method to delete from server
 		editListItem(authToken, newItem);
-		/*
-		this.setState({			
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(newList),
-  	});
 
-  	*/
-
-
-/*
-		pubnub.publish({
-			message: newItem,
-			channel: channel,
-			meta: {userDevice: pubnub.uuid}
-		},
-		function(status, response){
-			if (status.error) {
-        // handle error
-        console.log(status)
-      } else {
-        console.log("message Published w/ timetoken", response.timetoken)
-      }
-		});
-*/
 	}
 
 
@@ -190,11 +159,14 @@ export default class MyList extends React.Component{
 	}
 
 	_renderSectionHeader(headerData, sectionIndex){
+		console.log("header data");
+		console.log(sectionIDs);
+		console.log(sectionIDs[sectionIndex]);
 		return(
 			<TouchableOpacity
 				onPress={()=>this.toggleSectionOpen(sectionIndex)}
 				>
-				<Text style={styles.header}>{sectionIndex}</Text>
+				<Text style={styles.header}>{sectionIDs[sectionIndex]}</Text>
 			</TouchableOpacity>
 		);
 	}
