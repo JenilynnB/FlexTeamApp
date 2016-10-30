@@ -11,7 +11,7 @@ import MyList from './MyListContainer.js'
 import SideMenu from 'react-native-side-menu';
 import Menu from './Menu.js';
 import Chat from './ChatContainer.js';
-import AddToList from './AddToList.js';	
+import AddToList from './AddToListContainer.js';	
 import EditProfile from './EditProfileContainer.js'
 
 export default class TopNavBar extends React.Component{
@@ -59,7 +59,9 @@ export default class TopNavBar extends React.Component{
 	  	);
 	  }else if(this.props.scene === 'addToList'){
 	  	return(
-	  		<AddToList />
+	  		<AddToList 
+	  			navigator = {this.props.navigator}
+	  		/>
 	  	);
 	  }else if (this.props.scene === 'editProfile'){
 	  	return(

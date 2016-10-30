@@ -8,10 +8,11 @@ import {
   ListView,
 } from 'react-native'
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
-//import PubNub from 'pubnub';
 import { Icon } from 'react-native-elements'
-import { getList } from '../components/Remote.js';
+import { getList, editListItem, deleteListItem } from '../components/Remote.js';
 
+const authToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1ODEwMTZmOTlkMDBjMzAwMDNkMDhlMDEiLCJleHBpcmVzSW4iOiIyMDE2LTExLTA0VDE0OjQ1OjE0Ljk4MFoifQ.zo1hZZFfIorieNTunJbYZQBwWVhjY6ZOYXvHXONpFFM';
+	
 
 export default class MyList extends React.Component{
 	static propTypes = {
@@ -42,8 +43,11 @@ export default class MyList extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps) {
+		
 		if(nextProps.listItems !== this.props.listItems){
 			let data = nextProps.listItems;
+			console.log("component will recieve props");
+			console.log(data);
 			this.setState ({
 				dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
 			});
@@ -59,40 +63,46 @@ export default class MyList extends React.Component{
 
 
 	async fetchListData(){
-		var authToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1ODEwMTZmOTlkMDBjMzAwMDNkMDhlMDEiLCJleHBpcmVzSW4iOiIyMDE2LTExLTA0VDE0OjQ1OjE0Ljk4MFoifQ.zo1hZZFfIorieNTunJbYZQBwWVhjY6ZOYXvHXONpFFM';
+			
 		var listData = await getList(authToken);
 		
 		for (var i = listData.length - 1; i >= 0; i--) {
+			//console.log("adding a list item");
 			this.props.addListItem(listData[i]);
 			
 		}
+		
 	}
 
 
 
 	deleteRow(sectionID, rowID, rowMap) {
 		
-		console.log("deleting row");
+		//console.log("deleting row");
 		//Get the current list item id
 
+		console.log("deleting row");
+		console.log(sectionID);
+		console.log(rowID);
 		rowMap[`${sectionID}${rowID}`].closeRow();
 
 		var itemToDelete = this.props.listItems[sectionID][rowID];
 		var itemToDeleteFormatted = {_id: itemToDelete._id, type: sectionID}
-		var newList = this.props.removeListItem(itemToDeleteFormatted);
-
+		this.props.removeListItem(itemToDeleteFormatted);
+/*
 		this.setState({
-			
-			dataSource : this.state.dataSource.cloneWithRowsAndSections(newList),
-      
+			dataSource : this.state.dataSource.cloneWithRowsAndSections(this.props.listItems),
   	});
+*/
+		//Remote method to delete from server
+		deleteListItem(authToken, itemToDeleteFormatted);
 
 	}
 
 
 	markRowComplete(sectionID, rowID, rowMap){
 		
-		console.log("marking complete");
+		//console.log("marking complete");
 		//Get the current list item id
 
 		rowMap[`${sectionID}${rowID}`].closeRow();
@@ -102,13 +112,16 @@ export default class MyList extends React.Component{
 
 		var newItem = {_id: itemID, type: "complete", text: itemToEdit.text}
 		var newList = this.props.editListItem(newItem, sectionID);
-
-
-		this.setState({
-			
+		
+		//Remote method to delete from server
+		editListItem(authToken, newItem);
+		/*
+		this.setState({			
 			dataSource : this.state.dataSource.cloneWithRowsAndSections(newList),
-      
   	});
+
+  	*/
+
 
 /*
 		pubnub.publish({
@@ -212,6 +225,7 @@ var styles = StyleSheet.create ({
 		backgroundColor: '#f1f0f0',
 		flex: 1,
 		paddingTop: 64,
+		marginBottom: 50,
 		//TODO: Background color needs to be made to 40% opacity
 	},
 	rowContainer:{

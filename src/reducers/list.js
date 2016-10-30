@@ -1,18 +1,21 @@
 import { ADD_LIST_ITEM, REMOVE_LIST_ITEM, EDIT_LIST_ITEM, ADD_LIST_HISTORY } from '../constants';
-import { fromJS, } from 'immutable';
+import { fromJS, toJS, isMap } from 'immutable';
 
 const INITIAL_STATE = fromJS({
     //rawListItems: [],
     listItems: {},
-    dataSource: {}
+    sectionIDs: [],
 });
 
 function listReducer(state = INITIAL_STATE, action = {}){
 	switch(action.type){
 		case ADD_LIST_ITEM:
 			//Table accepts the following list format { sectionID_1: { rowID_1: <rowData1>, ... }, ... }
+
 			var item = action.payload;
-			
+			console.log("add list item reducer");
+			console.log(item);
+
 			var formattedItem = [];
 			//Item is formatted for use in ListView
 			formattedItem = {_id: item._id, text: item.text};
@@ -20,13 +23,14 @@ function listReducer(state = INITIAL_STATE, action = {}){
 			return state
 			.update('listItems', (listItems) => 
 				{
-					//assigning new variable to avoid mutations
-					var listCopy = Object.assign({}, listItems.toJS());
+					//Tricky way to clone object, to keep function pure (Object.assign throws error)
+					var listCopy = JSON.parse(JSON.stringify(listItems));
 					if (listCopy[item.type] === undefined){
 						listCopy[item.type] = [];
 					}
 					var newListSection = listCopy[item.type].concat([formattedItem])
 					listCopy[item.type] = newListSection;
+					console.log(listCopy);
 					return listCopy;
 					
 				});
@@ -42,7 +46,7 @@ function listReducer(state = INITIAL_STATE, action = {}){
 			.update('listItems', (listItems) => 
 				{
 					//assigning new variable to avoid mutations
-					var listCopy = Object.assign({}, listItems);
+					var listCopy = JSON.parse(JSON.stringify(listItems));
 					
 					//Loop through the previous section until a match is found
 					for(var j = 0; j < listCopy[previousSection].length; j++){
@@ -74,7 +78,7 @@ function listReducer(state = INITIAL_STATE, action = {}){
 			.update('listItems', (listItems) => 
 				{
 					//assigning new variable to avoid mutations
-					var listCopy = Object.assign({}, listItems);
+					var listCopy = JSON.parse(JSON.stringify(listItems));
 					
 					//Loop through the list section until a match is found
 					for(var j = 0; j < listCopy[item.type].length; j++){
@@ -97,6 +101,20 @@ function listReducer(state = INITIAL_STATE, action = {}){
 		default:
 			return state;
 	}
+
+}
+
+function listViewReducer(state = INITIAL_STATE, action){
+	//Calls the list reducer with the ation and returns the new state
+	var newState = listReducer(state, action);
+	
+	return newState
+	.update('sectionIDs', (sectionIDs) =>
+		{
+			console.log("list view reducer");
+			console.log(newState);
+		}
+	);
 
 }
 

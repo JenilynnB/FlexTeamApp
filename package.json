@@ -16,7 +16,7 @@
     "react-dom": "^15.3.2",
     "react-native": "0.33.0",
     "react-native-camera-roll-picker": "^1.1.8",
-    "react-native-elements": "^0.6.1",
+    "react-native-elements": "^0.6.2",
     "react-native-gifted-chat": "0.0.10",
     "react-native-loading-spinner-overlay": "^0.3.0",
     "react-native-nav": "^1.1.4",
@@ -24,12 +24,13 @@
     "react-native-side-menu": "^0.20.1",
     "react-native-swipe-list-view": "^0.3.0",
     "react-native-swipeout": "^2.0.12",
-    "react-native-swiper": "^1.4.11",
+    "react-native-swiper": "^1.5.2",
     "react-native-tab-navigator": "^0.3.3",
     "react-native-vector-icons": "^2.1.0",
     "react-redux": "^4.4.5",
     "react-validation": "^2.0.6",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "rn-cook": "0.0.4"
   },
   "devDependencies": {
     "webpack": "^1.13.2",

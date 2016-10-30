@@ -15,7 +15,6 @@ import LoginPage from '../containers/LoginPage.js'
 import CreateUserPage from '../containers/CreateUserPage.js'
 import CreateProfilePage from '../containers/CreateProfilePage.js'
 import Chat from '../containers/ChatContainer.js'
-import AddToList from '../containers/AddToList.js'
 import TopNavBar from '../containers/TopNavBar.js'
 
 import {USER_ID_KEY, AUTH_TOKEN_KEY, USER_FIRSTNAME_KEY} from '../constants';
@@ -47,7 +46,7 @@ export default class RootNav extends React.Component {
   }
 
   async loadStoredState(){
-    AsyncStorage.getAllKeys((err, response) => console.log(response));
+    //AsyncStorage.getAllKeys((err, response) => console.log(response));
     AsyncStorage.getItem(USER_ID_KEY, 
         (error, result) => {
           if (error === null) {
@@ -67,10 +66,10 @@ export default class RootNav extends React.Component {
       this.props.setUserFirstName(firstName);  
     }
     
-    console.log("Root Nav");
-    console.log(this.props.userID);
-    console.log(token);
-    console.log(firstName);
+    //console.log("Root Nav");
+    //console.log(this.props.userID);
+    //console.log(token);
+    //console.log(firstName);
   }
 
 

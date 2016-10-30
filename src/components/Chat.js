@@ -110,8 +110,8 @@ export default class Chat extends React.Component {
     },
     function(status, response){
       if (!status.error){
-        console.log("fetch history response");
-        console.log(response);
+        //console.log("fetch history response");
+        //console.log(response);
         props.addHistory(response);
       }else{
         Alert.alert(
@@ -163,7 +163,7 @@ export default class Chat extends React.Component {
   */
 
   onSend(messages = []) {
-    console.log("sending");
+    //console.log("sending");
     pubnub.publish({
       message: messages[0],
       channel: channel,

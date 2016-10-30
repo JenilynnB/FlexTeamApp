@@ -40,7 +40,7 @@ export default class CreateUserPage extends React.Component{
   		
 			let response = await login(this.state.emailText, this.state.passwordText);
 			this.setState({spinnerVisible: false});
-			console.log(response);
+			//console.log(response);
 			if(response.accessToken){
 				this.props._setAuthToken(response.accessToken);
 				var userProfile = response.profile;

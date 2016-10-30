@@ -63,8 +63,81 @@ export async function getList(authToken){
 			},
 	  });
 	  let responseJson = response.json();
-	  console.log(responseJson);
+	  //console.log(responseJson);
     return responseJson;
+	}catch (error){
+		console.log("error: ");
+		console.log(error);
+	}
+}
+
+
+
+export async function addListItem(authToken, listItem){
+	//console.log("adding an item")
+	//console.log(listItem);
+	try{
+		let response = await fetch(apiURL+listURL, {
+	  	method: 'POST',	
+			headers: {
+	  		'Accept': 'application/json',
+	  		'Content-Type': 'application/json',
+	  		'Authorization': authToken
+			},
+			body: JSON.stringify({
+				type: listItem.type,
+				text: listItem.text
+			})
+	  });
+	  let responseJson = response.json();
+	  //console.log(responseJson);
+    return responseJson._id;
+	}catch (error){
+		console.log("error: ");
+		console.log(error);
+	}
+}
+
+export async function editListItem(authToken, listItem){
+	console.log("editing an item")
+	console.log(listItem);
+	try{
+		let response = await fetch(apiURL+listURL, {
+	  	method: 'PATCH',	
+			headers: {
+	  		'Accept': 'application/json',
+	  		'Content-Type': 'application/json',
+	  		'Authorization': authToken
+			},
+			body: JSON.stringify({
+				_id: listItem._id,				
+				type: listItem.type,
+				text: listItem.text
+			})
+	  });
+	  //let responseJson = response.json();
+	  //console.log("edit list item response");
+    console.log(response);
+	}catch (error){
+		console.log("error: ");
+		console.log(error);
+	}
+}
+
+export async function deleteListItem(authToken, listItem){
+	try{
+		let response = await fetch(apiURL+listURL, {
+	  	method: 'DELETE',	
+			headers: {
+	  		'Accept': 'application/json',
+	  		'Content-Type': 'application/json',
+	  		'Authorization': authToken
+			},
+			body: JSON.stringify({
+				listItemId: listItem._id,				
+			})
+	  });
+    console.log(response);
 	}catch (error){
 		console.log("error: ");
 		console.log(error);

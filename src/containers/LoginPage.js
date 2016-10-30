@@ -29,7 +29,7 @@ export default class LoginPage extends React.Component{
 
 	async submitForm(){
 		
-		console.log("submitting login form");
+		//console.log("submitting login form");
 		if (this.state.emailText == ""){
 			//email blank, show error
 			Alert.alert(
@@ -61,7 +61,7 @@ export default class LoginPage extends React.Component{
 		} else {
   		// valid email
   		this.setState({spinnerVisible: true});
-
+			
 			let response = await login(this.state.emailText, this.state.passwordText);
 			this.setState({spinnerVisible: false});
 			if(response.accessToken){
@@ -84,6 +84,7 @@ export default class LoginPage extends React.Component{
 				}
 
 				this.navigateToTabBar();
+				
 			}else{
 				Alert.alert(
   			'Error Logging In',

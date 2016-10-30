@@ -47,7 +47,7 @@ export default class TabBar extends React.Component {
 
 
   render() {
-    console.log("rendering tabbar");
+    //console.log("rendering tabbar");
     //console.log(this.props.navigator);
     return (
       
